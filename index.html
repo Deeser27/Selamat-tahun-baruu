@@ -38,17 +38,16 @@
     <main class="stage" id="stage" aria-live="polite">
       <div class="segments" id="segments" aria-hidden="true"></div>
 
-      <!-- ✅ FX CANVAS (sparkle trail + particles) -->
+      <!-- FX canvas -->
       <canvas id="fx" class="fx" aria-hidden="true"></canvas>
 
-      <!-- dekor (tidak interaktif) -->
       <div class="decor" aria-hidden="true">
         <img class="sticker s1 par" data-depth="0.45" src="./assets/flower.svg" alt="" />
         <img class="sticker s2 par" data-depth="0.60" src="./assets/sparkle.svg" alt="" />
         <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
       </div>
 
-      <!-- ✅ DOCK: area aman bawah (Next + Kucing + badge) -->
+      <!-- DOCK bawah (aman) -->
       <div class="dock" id="dock" aria-hidden="false">
         <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
 
@@ -57,8 +56,6 @@
           <div class="catBadge mono" id="catBadge">tap kucing: 0/5</div>
         </div>
       </div>
-
-      <div class="hearts" id="hearts" aria-hidden="true"></div>
     </main>
 
     <footer class="bottom">
@@ -105,7 +102,7 @@
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-1.mp3" checked />
             <div class="trackMeta">
-              <div class="trackName">Pink Lofi</div>
+              <div class="trackName">Track 1</div>
               <div class="trackHint mono">assets/track-1.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="1">▶</button>
@@ -114,7 +111,7 @@
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-2.mp3" />
             <div class="trackMeta">
-              <div class="trackName">Soft Pop</div>
+              <div class="trackName">Track 2</div>
               <div class="trackHint mono">assets/track-2.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="2">▶</button>
@@ -123,7 +120,7 @@
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-3.mp3" />
             <div class="trackMeta">
-              <div class="trackName">Cute Piano</div>
+              <div class="trackName">Track 3</div>
               <div class="trackHint mono">assets/track-3.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="3">▶</button>
@@ -138,7 +135,7 @@
         <button class="btn primary bigBtn" id="startBtn" type="button">Start ✨</button>
 
         <div class="sheetHint mono">
-          Tip: kamu masih bisa “Pick” lagu dari HP setelah Start.
+          Tip: kalau musik nggak bunyi, pastikan file mp3 ada di folder assets.
         </div>
       </div>
     </div>
@@ -159,12 +156,13 @@
           <button class="btn primary" id="okSecret" type="button">Oke 💗</button>
         </div>
 
-        <div class="sheetHint mono">ps: kamu beneran tap kucingnya 5x ya? lucu.</div>
+        <div class="sheetHint mono">ps: iya, ini secret beneran.</div>
       </div>
     </div>
   </div>
 
-  <audio id="bgm" loop preload="none"></audio>
+  <!-- playsinline biar iOS nggak aneh -->
+  <audio id="bgm" loop preload="auto" playsinline webkit-playsinline></audio>
   <script defer src="./app.js"></script>
 </body>
 </html>
