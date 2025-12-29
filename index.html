@@ -18,7 +18,7 @@
     <header class="top">
       <div class="left">
         <div class="pill mono" id="toTag">TO: -</div>
-        <div class="sub mono" id="subTag">tap / swipe → next • tap kartu = bonus • tap kucing 5x = rahasia</div>
+        <div class="sub mono" id="subTag">ganti slide: klik tombol Next (tap layar nggak pindah)</div>
       </div>
 
       <div class="right">
@@ -40,16 +40,21 @@
       <!-- story segments -->
       <div class="segments" id="segments" aria-hidden="true"></div>
 
+      <!-- floating Next button (random position) -->
+      <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
+
       <!-- stickers -->
       <div class="stickers" id="stickers" aria-hidden="true">
         <img class="sticker s1 par" data-depth="0.45" src="./assets/flower.svg" alt="" />
         <img class="sticker s2 par" data-depth="0.60" src="./assets/sparkle.svg" alt="" />
         <img class="sticker s3 par cat" data-depth="0.85" src="./assets/cat.svg" alt="" />
         <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
+
+        <!-- ✅ cat badge: sekarang di atas card (nggak ketutup) -->
         <div class="catBadge mono" id="catBadge" aria-hidden="true">tap kucing: 0/5</div>
       </div>
 
-      <!-- floating particles -->
+      <!-- particles -->
       <div class="hearts" id="hearts" aria-hidden="true"></div>
     </main>
 
@@ -58,14 +63,16 @@
 
       <div class="controls">
         <button class="btn ghost" id="prevBtn" type="button" aria-label="Sebelumnya">Back</button>
-        <button class="btn primary" id="nextBtn" type="button" aria-label="Berikutnya">Next</button>
+
+        <!-- Next di footer sengaja disembunyikan (Next muncul random di stage). -->
+        <button class="btn primary hidden" id="nextBtn" type="button" aria-label="Berikutnya">Next</button>
       </div>
 
       <div class="metaRow">
         <button class="reactBtn" id="heartBtn" type="button" aria-label="React heart">
           💗 <span class="mono" id="heartCount">0</span>
         </button>
-        <div class="hint mono" id="hint">Hold (tekan lama) untuk auto-next • release untuk pause</div>
+        <div class="hint mono" id="hint">tap kartu = bonus • last slide: tap kartu = flip • tap kucing 5x = secret</div>
       </div>
     </footer>
 
@@ -82,20 +89,17 @@
         <div class="grid">
           <label class="field">
             <span class="mono">To</span>
-            <!-- ✅ UBAH DEFAULT NAMA DI SINI -->
             <input id="inputTo" type="text" value="Teman Dekatku" maxlength="40" />
           </label>
 
           <label class="field">
             <span class="mono">From</span>
-            <!-- ✅ UBAH DEFAULT NAMA DI SINI -->
             <input id="inputFrom" type="text" value="Aku" maxlength="40" />
           </label>
         </div>
 
         <div class="sectionTitle mono">Backsound (3 opsi)</div>
 
-        <!-- ✅ UBAH NAMA & FILE PATH TRACK DI BAGIAN INI -->
         <div class="trackList" id="trackList">
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-1.mp3" checked />
@@ -160,7 +164,6 @@
   </div>
 
   <audio id="bgm" loop preload="none"></audio>
-
   <script defer src="./app.js"></script>
 </body>
 </html>
