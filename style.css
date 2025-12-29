@@ -27,7 +27,6 @@ body{
     linear-gradient(180deg, var(--bg1), var(--bg2));
   background-size: 48px 48px, 48px 48px, auto;
   transition: background 500ms var(--ease);
-
   overflow:hidden;
 }
 
@@ -119,8 +118,13 @@ body{
   50%{ width: 60%; opacity: 1; }
 }
 
-/* stickers */
-.stickers{ position:absolute; inset:0; pointer-events:none; z-index:5; }
+/* ===== Decor layer (no interaction) ===== */
+.decor{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index: 6;
+}
 .sticker{
   position:absolute;
   opacity: .96;
@@ -134,30 +138,50 @@ body{
 }
 .s1{ left: 10px; top: 24px; width: 86px; animation-duration: 3.8s; }
 .s2{ right: 12px; top: 30px; width: 70px; animation-duration: 3.1s; }
-.s3{ right: 8px; bottom: 8px; width: 120px; animation-duration: 4.2s; }
 .s4{ left: 10px; bottom: 18px; width: 74px; opacity:.88; animation-duration: 3.6s; }
 
-.cat{ pointer-events:auto; touch-action:none; cursor:pointer; }
+/* ===== Cat layer (interaktif & selalu di atas card) ===== */
+.catLayer{
+  position:absolute;
+  inset:0;
+  z-index: 60;         /* di atas slide/card */
+  pointer-events:none; /* default none, tapi si cat sendiri auto */
+}
+.s3{
+  right: 8px;
+  bottom: 8px;
+  width: 120px;
+  animation-duration: 4.2s;
+}
+.cat{
+  pointer-events:auto;
+  touch-action:none;
+  cursor:pointer;
+}
 
-/* ✅ cat badge: naik z-index & posisinya dekat kucing, tidak nutup card */
+/* cat badge: gak ketutup lagi */
 .catBadge{
   position:absolute;
   right: 18px;
-  bottom: 140px;
+  bottom: 138px;       /* di atas kucing */
   padding: 7px 10px;
   border-radius: 999px;
   border: 1px solid rgba(255,95,162,.24);
-  background: rgba(255,255,255,.90);
+  background: rgba(255,255,255,.92);
   color: var(--muted);
   font-size: 11px;
   box-shadow: 0 18px 60px rgba(255,95,162,.12);
   opacity: .98;
-  z-index: 35;         /* <-- ini yang bikin gak ketutup card */
-  pointer-events: none;
+  z-index: 61;
+  pointer-events:none;
 }
 
 /* particles */
-.hearts{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:40; }
+.hearts{
+  position:absolute; inset:0;
+  pointer-events:none; overflow:hidden;
+  z-index: 80;
+}
 .heart{
   position:absolute;
   opacity:0;
@@ -171,11 +195,13 @@ body{
   100%{ opacity:0; transform: translate(-50%, -110%) scale(.9); }
 }
 
-/* slides base */
+/* slides */
 .slide{
   position:absolute; inset:0;
-  padding: 22px 18px;
-  display:flex; flex-direction:column; justify-content:center;
+  padding: 70px 18px 120px; /* ✅ space bawah khusus (buat Next & kucing) */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
   opacity:0;
   transform: translateX(0) translateY(0) rotate(0) scale(1);
   z-index: 12;
@@ -186,7 +212,7 @@ body{
   pointer-events:auto;
 }
 
-/* cards */
+/* card */
 .card{
   border-radius: 22px;
   border:1px solid rgba(255,95,162,.22);
@@ -197,6 +223,7 @@ body{
   transition: transform 160ms var(--ease);
 }
 .card:active{ transform: scale(.99); }
+
 .kicker{ display:flex; align-items:center; justify-content:space-between; gap:10px; color: var(--muted2); font-size:12px; }
 .title{
   font-family: Nunito, Inter, system-ui, sans-serif;
@@ -364,13 +391,13 @@ body{
   z-index: 120;
 }
 
-/* ===== Floating Next button ===== */
+/* Floating Next button */
 .floatNext{
   position:absolute;
   left: 50%;
-  top: 76%;
+  top: 78%;
   transform: translate(-50%, -50%);
-  z-index: 50;
+  z-index: 55; /* di atas card */
   border:1px solid rgba(255,95,162,.22);
   background: linear-gradient(135deg, rgba(255,95,162,.92), rgba(255,147,197,.88));
   color:#fff;
@@ -382,11 +409,7 @@ body{
   box-shadow: 0 22px 60px rgba(255,95,162,.22);
   animation: floatBtn 1.4s var(--ease) infinite;
 }
-.floatNext::after{
-  content: "➜";
-  margin-left: 8px;
-  opacity: .95;
-}
+.floatNext::after{ content:"➜"; margin-left:8px; opacity:.95; }
 .floatNext:active{ transform: translate(-50%, -50%) scale(.98); }
 @keyframes floatBtn{
   0%,100%{ transform: translate(-50%, -50%) rotate(-1deg); }
