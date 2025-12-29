@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#ff5fa2" />
+  <title>Happy New Year 💗</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Nunito:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <div class="app" id="app">
+    <header class="top">
+      <div class="left">
+        <div class="pill mono" id="toTag">TO: -</div>
+        <div class="sub mono" id="subTag">tap / swipe → next • tap kartu = bonus • tap kucing 5x = rahasia</div>
+      </div>
+
+      <div class="right">
+        <div class="counter mono" id="counter">----</div>
+
+        <button class="iconBtn" id="musicBtn" type="button" aria-label="Toggle music" title="Music on/off">
+          <span id="musicIcon">♪</span>
+        </button>
+
+        <button class="iconBtn" id="pickBtn" type="button" aria-label="Pick music file" title="Pick audio file">
+          Pick
+        </button>
+
+        <input id="musicFile" type="file" accept="audio/*" hidden />
+      </div>
+    </header>
+
+    <main class="stage" id="stage" aria-live="polite">
+      <!-- story segments -->
+      <div class="segments" id="segments" aria-hidden="true"></div>
+
+      <!-- stickers -->
+      <div class="stickers" id="stickers" aria-hidden="true">
+        <img class="sticker s1 par" data-depth="0.45" src="./assets/flower.svg" alt="" />
+        <img class="sticker s2 par" data-depth="0.60" src="./assets/sparkle.svg" alt="" />
+        <img class="sticker s3 par cat" data-depth="0.85" src="./assets/cat.svg" alt="" />
+        <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
+        <div class="catBadge mono" id="catBadge" aria-hidden="true">tap kucing: 0/5</div>
+      </div>
+
+      <!-- floating particles -->
+      <div class="hearts" id="hearts" aria-hidden="true"></div>
+    </main>
+
+    <footer class="bottom">
+      <div class="dots" id="dots" aria-label="Progress"></div>
+
+      <div class="controls">
+        <button class="btn ghost" id="prevBtn" type="button" aria-label="Sebelumnya">Back</button>
+        <button class="btn primary" id="nextBtn" type="button" aria-label="Berikutnya">Next</button>
+      </div>
+
+      <div class="metaRow">
+        <button class="reactBtn" id="heartBtn" type="button" aria-label="React heart">
+          💗 <span class="mono" id="heartCount">0</span>
+        </button>
+        <div class="hint mono" id="hint">Hold (tekan lama) untuk auto-next • release untuk pause</div>
+      </div>
+    </footer>
+
+    <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- START POPUP (edit nama & track di sini) -->
+    <div class="overlay show" id="startModal" aria-hidden="false">
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="Mulai">
+        <div class="sheetTop">
+          <div class="pill mono">SETUP 💗</div>
+          <div class="sheetSub mono">Pilih backsound + isi nama, lalu Start</div>
+        </div>
+
+        <div class="grid">
+          <label class="field">
+            <span class="mono">To</span>
+            <!-- ✅ UBAH DEFAULT NAMA DI SINI -->
+            <input id="inputTo" type="text" value="Teman Dekatku" maxlength="40" />
+          </label>
+
+          <label class="field">
+            <span class="mono">From</span>
+            <!-- ✅ UBAH DEFAULT NAMA DI SINI -->
+            <input id="inputFrom" type="text" value="Aku" maxlength="40" />
+          </label>
+        </div>
+
+        <div class="sectionTitle mono">Backsound (3 opsi)</div>
+
+        <!-- ✅ UBAH NAMA & FILE PATH TRACK DI BAGIAN INI -->
+        <div class="trackList" id="trackList">
+          <label class="trackItem">
+            <input type="radio" name="track" value="./assets/track-1.mp3" checked />
+            <div class="trackMeta">
+              <div class="trackName">Pink Lofi</div>
+              <div class="trackHint mono">assets/track-1.mp3</div>
+            </div>
+            <button class="miniBtn" type="button" data-preview="1">▶</button>
+          </label>
+
+          <label class="trackItem">
+            <input type="radio" name="track" value="./assets/track-2.mp3" />
+            <div class="trackMeta">
+              <div class="trackName">Soft Pop</div>
+              <div class="trackHint mono">assets/track-2.mp3</div>
+            </div>
+            <button class="miniBtn" type="button" data-preview="2">▶</button>
+          </label>
+
+          <label class="trackItem">
+            <input type="radio" name="track" value="./assets/track-3.mp3" />
+            <div class="trackMeta">
+              <div class="trackName">Cute Piano</div>
+              <div class="trackHint mono">assets/track-3.mp3</div>
+            </div>
+            <button class="miniBtn" type="button" data-preview="3">▶</button>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="check mono"><input id="remember" type="checkbox" checked /> remember</label>
+          <label class="check mono"><input id="noMusic" type="checkbox" /> tanpa musik</label>
+        </div>
+
+        <button class="btn primary bigBtn" id="startBtn" type="button">Start ✨</button>
+
+        <div class="sheetHint mono">
+          Tip: kamu masih bisa “Pick” lagu dari HP setelah Start.
+        </div>
+      </div>
+    </div>
+
+    <!-- Secret modal -->
+    <div class="overlay" id="secretModal" aria-hidden="true">
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="Pesan rahasia">
+        <div class="sheetTop">
+          <div class="pill mono">SECRET UNLOCKED 🐱</div>
+          <button class="xBtn" id="closeSecret" type="button" aria-label="Tutup">✕</button>
+        </div>
+
+        <div class="sectionTitle">Pesan Rahasia</div>
+        <p class="sheetText" id="secretText"></p>
+
+        <div class="sheetActions">
+          <button class="btn ghost" id="copySecret" type="button">Copy</button>
+          <button class="btn primary" id="okSecret" type="button">Oke 💗</button>
+        </div>
+
+        <div class="sheetHint mono">ps: kamu beneran tap kucingnya 5x ya? lucu.</div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgm" loop preload="none"></audio>
+
+  <script defer src="./app.js"></script>
+</body>
+</html>
