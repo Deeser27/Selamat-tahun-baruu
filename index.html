@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Nunito:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -39,8 +38,8 @@
     <main class="stage" id="stage" aria-live="polite">
       <div class="segments" id="segments" aria-hidden="true"></div>
 
-      <!-- Floating Next (posisi random tapi aman) -->
-      <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
+      <!-- ✅ FX CANVAS (sparkle trail + particles) -->
+      <canvas id="fx" class="fx" aria-hidden="true"></canvas>
 
       <!-- dekor (tidak interaktif) -->
       <div class="decor" aria-hidden="true">
@@ -49,10 +48,14 @@
         <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
       </div>
 
-      <!-- layer interaktif khusus kucing + badge -->
-      <div class="catLayer" id="catLayer" aria-hidden="false">
-        <img class="sticker s3 par cat" data-depth="0.85" src="./assets/cat.svg" alt="cat" />
-        <div class="catBadge mono" id="catBadge">tap kucing: 0/5</div>
+      <!-- ✅ DOCK: area aman bawah (Next + Kucing + badge) -->
+      <div class="dock" id="dock" aria-hidden="false">
+        <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
+
+        <div class="catLayer" id="catLayer">
+          <img class="cat par" data-depth="0.85" id="cat" src="./assets/cat.svg" alt="cat" />
+          <div class="catBadge mono" id="catBadge">tap kucing: 0/5</div>
+        </div>
       </div>
 
       <div class="hearts" id="hearts" aria-hidden="true"></div>
@@ -63,7 +66,6 @@
 
       <div class="controls">
         <button class="btn ghost" id="prevBtn" type="button" aria-label="Sebelumnya">Back</button>
-        <!-- fallback hidden -->
         <button class="btn primary hidden" id="nextBtn" type="button" aria-label="Berikutnya">Next</button>
       </div>
 
