@@ -1,8 +1,12 @@
+const FIXED_FROM = "ninu";
+const FIXED_TO   = "cheisyaa";
+
 const CONFIG = {
   musicVolume: 0.62,
   catTapsNeeded: 5,
+
   secretMessage:
-    "Oke… kamu nemu pesan rahasia.\n\nTerima kasih udah jadi orang yang bikin hari aku lebih ringan tahun ini.\nSemoga tahun depan kamu lebih bahagia, lebih sehat, dan lebih disayang dunia.\n\n(…dan iya, kamu tetap teman dekat aku.)\n\n— {{from}}",
+    "Okeee  kamu nemu pesan rahasianyaa\n\n Maakasihh udah jadi orang yang bikin hariku lebih seruu tahun ini🥹🥹\nSemoga tahun depann kita masihh temenann dan makin akrabb 🫶\n\n— {{from}}",
 
   bgs: [
     ["#ffe6f2", "#ffffff"],
@@ -14,14 +18,16 @@ const CONFIG = {
   ],
 
   nextLabels: ["Next","lanjut","gas","oke next","klik aku","next pls","ayok","terus?","oke, lanjut","coba tekan ini"],
+  enterVariants: ["enterA","enterB","enterC","enterD"],
+  exitVariants: ["exitA","exitB","exitC"],
 
   slides: [
-    { kicker:"happy new year 💗", title:"Selamat Tahun Baru!", text:"Semoga 2026 lebih baik… dan semoga kamu <span class='highlight'>nggak makin random</span> ya.", foot:"klik tombol Next ya →", note:"Bonus: kalau kamu ketawa dikit aja, berarti misi aku sukses 😌" },
-    { kicker:"terima kasih mode: ON", title:"Makasih ya.", text:"Makasih udah jadi teman dekat. Kamu kadang ngeselin… tapi <span class='highlight'>ngangenin juga</span>.", foot:"klik Next kalau sudah baca", note:"Kalau kamu baca ini sampai habis, aku anggap kamu niat." },
-    { kicker:"small facts (real)", title:"Fakta singkat:", text:"Aku suka cara kamu hadir tanpa banyak drama. Tapi ya itu… <span class='highlight'>bales chat jangan kayak cicilan</span> ya.", foot:"Next ada di mana ya…", note:"Aku bercanda. (sedikit.)" },
-    { kicker:"reset button", title:"Kalau tahun ini berat…", text:"Yang bikin kamu capek: tinggalin. Yang bikin kamu senyum: simpen.", foot:"Next untuk lanjut", note:"Kalau butuh tempat cerita, aku masih ada." },
-    { kicker:"wish list 🧁", title:"Doa aku simpel:", text:"Semoga kamu sehat, rezeki lancar, hati adem. Dan semoga kita tetap teman dekat.", foot:"klik Next", note:"Semoga kamu makin sayang sama diri sendiri." },
-    { kicker:"final 💌", title:"Udah. Segitu.", text:"Selamat Tahun Baru. Terima kasih buat waktumu tahun ini. <span class='highlight'>Jangan hilang</span> ya.", foot:"— {{from}}", note:"Kartu ini bisa flip. Tap kartu 😌" }
+    { kicker:"SElamaatt tahun baruu🌸", title:"Selamat Tahun Baru!", text:"Semoga 2026 lebih baik… dan semoga kamu <span class='highlight'> makin random lagii WKWKWKWKKW</span> ya.", foot:"Next ada tombol / swipe →", note:"Bonus: kalau kamu senyum dikit aja, aku anggap berhasil, wkwkw lay😌" },
+    { kicker:"terima kasih mode: ON", title:"Makasih ya.", text:"Makasih yaa udah bantuu in aku sama nagjak hal hal seruu ke akuu, terus makasihh juga buat pas kemaren ituu, km sampe nungguin aku pulang yang puylangnya hari senin padhaal kamu dari hari kamis dah bisa pulanggg😭😭 <span class='highlight'></span>. 🫶", foot:"Next untuk lanjut", note:"jumjur aku gatau mau ngomong apa WKKWKWKW, intinya makasihh dahhh" },
+    { kicker:"small facts (real)", title:"Fakta singkat:", text:"Aku tuh awall awall kuliahh bingungg dan gatau apa paa loh aslei heheheh <span class='highlight'>untung kamu banyak bantuu.", foot:"Next: cari tombolnya 😭", note:"kali ini gaada notenya" },
+    { kicker:"reset button", title:"Kalau tahun ini aku ada salah", text:"Yang bikin kamu kesel atau marah gitu atau tersinggung aku minta maaf yaa, minta maaf juga kalo aku sering chat ngespam gitu, apalagi akhir2 ini, makanya aku agak ngurangin, takut ganggu hehe👉👈", foot:"Next", note:"aku minta maaaf nya beneran ini bukan alay, walau pasti kamubilang alay sihhh......" },
+    { kicker:"Sehatt selalauu", title:"semoga tahun besok kmju tidur maelmm, ga sehatt kocak ga tidur tuh", text:"Semoga kamu sehat, rezeki lancar, hati adem. Dan semoga kita tetap dekett.", foot:"Next", note:"kayanya aku terallau alay dehh hehe" },
+    { kicker:"final 💌", title:"Udahhh Segitu ajaa bingung mau isi apa lagi wkwkwk", text:"Selamat Tahun Baruuu🥳🥳🥳🥳🥳,  Terima kasih buat semuanyaa tahun ini. <span class='highlight'></span> 🫶", foot:"— {{from}}", note:"Kartu ini bisa flip. Tap kartu 😌" }
   ]
 };
 
@@ -56,6 +62,8 @@ function setBG(i){
 
 /* DOM */
 const stage = $("#stage");
+const petalsLayer = $("#petals");
+const partyLayer = $("#partyLayer");
 const dock  = $("#dock");
 const fx    = $("#fx");
 const ctx   = fx.getContext("2d");
@@ -63,11 +71,12 @@ const ctx   = fx.getContext("2d");
 const dotsEl = $("#dots");
 const segmentsEl = $("#segments");
 
+const fromTag = $("#fromTag");
 const toTag = $("#toTag");
 const counterEl = $("#counter");
 
 const prevBtn = $("#prevBtn");
-const nextBtn = $("#nextBtn"); // fallback hidden
+const nextBtn = $("#nextBtn");
 const floatNext = $("#floatNext");
 
 const heartBtn = $("#heartBtn");
@@ -82,8 +91,6 @@ const parEls = Array.from(document.querySelectorAll(".par"));
 /* modals */
 const startModal = $("#startModal");
 const startBtn = $("#startBtn");
-const inputTo = $("#inputTo");
-const inputFrom = $("#inputFrom");
 const remember = $("#remember");
 const noMusic = $("#noMusic");
 const trackList = $("#trackList");
@@ -102,12 +109,13 @@ const pickBtn = $("#pickBtn");
 const musicFile = $("#musicFile");
 
 /* state */
-let toName = "—";
-let fromName = "—";
+let toName = FIXED_TO;
+let fromName = FIXED_FROM;
 let slides = [];
 let index = 0;
 
-let heartsCount = 0;
+let sakuraCount = 0;
+
 let musicOn = true;
 let pickedObjectUrl = null;
 
@@ -120,6 +128,15 @@ let catPress = null;
 let catDragging = false;
 let lastTapStamp = 0;
 
+/* gesture / interactions */
+let swipe = null;
+let lastCardTap = { t: 0, x: 0, y: 0 };
+let holdTimer = null;
+
+/* tilt */
+let tilt = { x: 0, y: 0, enabled: false };
+let lastShakeAt = 0;
+
 /* smooth targets */
 let pointer = { x: 0.5, y: 0.5, active: false };
 let parNow = { x: 0, y: 0 };
@@ -127,6 +144,49 @@ let parTo  = { x: 0, y: 0 };
 
 let nextNow = { x: 0, y: 0 };
 let nextTo  = { x: 0, y: 0 };
+
+/* ===== background petals (ringan) ===== */
+let petalsMade = false;
+function makePetals(){
+  if (petalsMade || !petalsLayer) return;
+  petalsMade = true;
+
+  let count = 22;
+  const w = Math.min(window.innerWidth || 390, 520);
+  if (w < 380) count = 18;
+  else if (w < 460) count = 22;
+  else count = 26;
+
+  const stageW = stage.getBoundingClientRect().width || (window.innerWidth || 390);
+
+  for (let i = 0; i < count; i++){
+    const p = document.createElement("i");
+    p.className = "petal";
+
+    const x = rand(0, stageW);
+    const drift = rand(-40, 80);
+    const sway = rand(-18, 28);
+    const dur = rand(8.5, 13.5);
+    const delay = rand(0, 6);
+    const swayDur = rand(3.0, 5.4);
+    const rotEnd = rand(200, 420);
+
+    const size = rand(8, 14);
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.opacity = String(rand(0.55, 0.92));
+
+    p.style.setProperty("--x", `${x}px`);
+    p.style.setProperty("--drift", `${drift}px`);
+    p.style.setProperty("--sway", `${sway}px`);
+    p.style.setProperty("--dur", `${dur}s`);
+    p.style.setProperty("--delay", `${delay}s`);
+    p.style.setProperty("--swayDur", `${swayDur}s`);
+    p.style.setProperty("--rotEnd", `${rotEnd}deg`);
+
+    petalsLayer.appendChild(p);
+  }
+}
 
 /* ===== FX particles (canvas) ===== */
 const particles = [];
@@ -155,7 +215,6 @@ function drawStar(x,y,r,rot){
   ctx.fill();
   ctx.restore();
 }
-
 function spawnSparkle(x, y, n=8, power=1){
   if (prefersReduce) return;
   for(let i=0;i<n;i++){
@@ -173,7 +232,6 @@ function spawnSparkle(x, y, n=8, power=1){
     });
   }
 }
-
 function spawnConfetti(n=36){
   if (prefersReduce) return;
   const r = stage.getBoundingClientRect();
@@ -194,7 +252,6 @@ function spawnConfetti(n=36){
     });
   }
 }
-
 function fxStep(dt){
   ctx.clearRect(0,0,fx.width,fx.height);
   ctx.globalCompositeOperation = "lighter";
@@ -205,14 +262,12 @@ function fxStep(dt){
     const t = p.age / p.life;
     if (t >= 1){ particles.splice(i,1); continue; }
 
-    // physics
     const g = p.confetti ? 0.0065 : 0.0048;
     p.vy += g * dt;
     p.x += p.vx * (dt/16);
     p.y += p.vy * (dt/16);
     p.rot += p.vr * (dt/16);
 
-    // color feel
     const alpha = (1 - t) * (p.confetti ? 0.75 : 0.95);
     const pinkA = `rgba(255,95,162,${alpha})`;
     const pinkB = `rgba(255,147,197,${alpha})`;
@@ -229,14 +284,115 @@ function fxStep(dt){
   ctx.globalCompositeOperation = "source-over";
 }
 
-/* ===== storage ===== */
+/* ===== DOM fun (🌸 dominan + sesekali 🫶) ===== */
+function pickPetalEmoji(){
+  return (Math.random() < 0.18) ? "🫶" : "🌸";
+}
+function spawnPetals(clientX, clientY, count=10){
+  if (prefersReduce) return;
+  const r = stage.getBoundingClientRect();
+  for(let i=0;i<count;i++){
+    const el = document.createElement("span");
+    el.className = "floatHeart";
+    el.textContent = pickPetalEmoji();
+    el.style.left = (clientX - r.left) + "px";
+    el.style.top  = (clientY - r.top) + "px";
+    el.style.setProperty("--dx", `${rand(-70, 70)}px`);
+    el.style.setProperty("--dy", `${rand(-150, -80)}px`);
+    el.style.setProperty("--rot", `${rand(-50, 50)}deg`);
+    stage.appendChild(el);
+    el.addEventListener("animationend", ()=> el.remove());
+  }
+}
+function meowBubble(text="meow", anchorEl=catEl){
+  const sr = stage.getBoundingClientRect();
+  const ar = anchorEl.getBoundingClientRect();
+  const x = (ar.left + ar.right)/2 - sr.left;
+  const y = ar.top - sr.top + 6;
+
+  const b = document.createElement("div");
+  b.className = "meow";
+  b.textContent = text;
+  b.style.left = x + "px";
+  b.style.top  = y + "px";
+  stage.appendChild(b);
+  b.addEventListener("animationend", ()=> b.remove());
+}
+
+/* ===== FINAL PARTY (heboh & lucu) ===== */
+let finalPartyDone = false;
+
+function partyText(txt){
+  if (!partyLayer) return;
+  const el = document.createElement("div");
+  el.className = "partyText";
+  el.textContent = txt;
+  partyLayer.appendChild(el);
+  el.addEventListener("animationend", ()=> el.remove());
+}
+
+function emojiRain(emojis=["🌸","🌸","✨","🎀","🫶"], duration=2400, perTick=3){
+  if (prefersReduce || !partyLayer) return;
+
+  const r = stage.getBoundingClientRect();
+  const start = performance.now();
+
+  const timer = setInterval(()=>{
+    if (performance.now() - start > duration){
+      clearInterval(timer);
+      return;
+    }
+
+    for(let i=0;i<perTick;i++){
+      const e = document.createElement("span");
+      e.className = "partyEmoji";
+      e.textContent = pick(emojis);
+
+      const x = rand(10, r.width - 10);
+      e.style.left = `${x}px`;
+      e.style.fontSize = `${rand(18, 26)}px`;
+      e.style.setProperty("--xdrift", `${rand(-55, 55)}px`);
+      e.style.setProperty("--rot", `${rand(-160, 160)}deg`);
+      e.style.setProperty("--dur", `${rand(1.7, 2.7)}s`);
+
+      partyLayer.appendChild(e);
+      e.addEventListener("animationend", ()=> e.remove());
+    }
+  }, 120);
+}
+
+function megaCelebrate(){
+  if (finalPartyDone) return;
+  finalPartyDone = true;
+
+  const lowPower = (window.innerWidth || 390) < 380;
+
+  stage.classList.add("party");
+  setTimeout(()=> stage.classList.remove("party"), 920);
+
+  partyText(pick(["YEAYYYY 🌸","KAMU HEBAT 🌸","HAPPY NEW YEAR 🌸","OK FIX LUCU 🌸","CHEISYAA WIN 🌸"]));
+  toast("HAPPY NEW YEAR 🌸", 1900);
+  vibrate(28);
+
+  spawnConfetti(lowPower ? 90 : 150);
+
+  const b = stage.getBoundingClientRect();
+  const pts = [
+    [b.left + b.width*0.18, b.top + b.height*0.82],
+    [b.left + b.width*0.82, b.top + b.height*0.82],
+    [b.left + b.width*0.50, b.top + b.height*0.22],
+  ];
+  pts.forEach(([x,y]) => spawnPetals(x, y, lowPower ? 14 : 22));
+
+  emojiRain(["🌸","🌸","🌸","✨","🎀","🫶"], lowPower ? 1800 : 2600, lowPower ? 2 : 3);
+}
+
+/* ===== storage (track only) ===== */
 function loadSaved(){
   try{
     const raw = localStorage.getItem("ny-setup");
     if (!raw) return;
     const data = JSON.parse(raw);
-    if (data?.to) inputTo.value = data.to;
-    if (data?.from) inputFrom.value = data.from;
     if (typeof data?.noMusic === "boolean") noMusic.checked = data.noMusic;
 
     const radios = trackList.querySelectorAll("input[type='radio'][name='track']");
@@ -249,8 +405,6 @@ function saveSetup(track){
   if (!remember.checked) return;
   try{
     localStorage.setItem("ny-setup", JSON.stringify({
-      to: inputTo.value.trim(),
-      from: inputFrom.value.trim(),
       track,
       noMusic: !!noMusic.checked
     }));
@@ -258,7 +412,7 @@ function saveSetup(track){
 }
 loadSaved();
 
-/* ===== music robust ===== */
+/* ===== music ===== */
 function setMusicUI(){
   musicBtn.classList.toggle("off", !musicOn);
   musicIcon.textContent = musicOn ? "♪" : "♪×";
@@ -270,31 +424,25 @@ function setTrack(src){
   bgm.src = src;
   bgm.load();
 }
-
 async function tryPlayMusic(reason=""){
   if (!musicOn) return;
   try{
     bgm.muted = false;
     bgm.volume = CONFIG.musicVolume;
-    // reset sedikit biar “kerasa play”
     if (bgm.currentTime > 0.05 && reason === "start") bgm.currentTime = 0;
     await bgm.play();
-  }catch(err){
-    // kalau browser blok atau file error, kasih info
-    toast("Musik belum bunyi. Cek file mp3 di /assets atau tap tombol ♪.");
-    // console.log(err);
+  }catch{
+    toast("Musik belum bunyi. Isi mp3 di /assets atau tap tombol ♪.");
   }
 }
-
 bgm.addEventListener("error", ()=>{
-  toast("File musik tidak ketemu. Pastikan ada: assets/track-1.mp3 (dst).");
+  toast("File musik tidak ketemu. Isi: assets/track-1.mp3 (dst).");
 });
-
 function stopMusic(){ bgm.pause(); }
 function toggleMusic(){
   musicOn = !musicOn;
   setMusicUI();
-  if (musicOn){ toast("music on 💗"); tryPlayMusic("toggle"); }
+  if (musicOn){ toast("music on 🌸"); tryPlayMusic("toggle"); }
   else { toast("music off"); stopMusic(); }
 }
 musicBtn.addEventListener("click", (e)=>{ e.stopPropagation(); toggleMusic(); });
@@ -342,7 +490,7 @@ trackList.addEventListener("click", (e)=>{
   }
 });
 
-/* ===== slides ===== */
+/* ===== header / progress ===== */
 function buildSlides(){
   slides = CONFIG.slides.map(s => ({
     kicker: s.kicker,
@@ -377,9 +525,10 @@ function updateDots(){
   Array.from(dotsEl.children).forEach((d, i)=> d.classList.toggle("on", i === index));
   prevBtn.disabled = index === 0;
 }
-function updateCounter(){
+function updateHeader(){
   const y = new Date().getFullYear();
   counterEl.textContent = `${y}→${y+1}`;
+  fromTag.textContent = `FROM: ${fromName}`;
   toTag.textContent = `TO: ${toName}`;
 }
 
@@ -394,7 +543,7 @@ function openSecret(){
   secretModal.classList.add("show");
   secretModal.setAttribute("aria-hidden", "false");
   spawnConfetti(54);
-  toast("secret unlocked 💗");
+  toast("secret unlocked 🌸");
   vibrate(18);
 }
 function closeSecretModal(){
@@ -410,10 +559,10 @@ copySecret.addEventListener("click", async (e)=>{
   catch{ toast("copy gagal"); }
 });
 
-/* ===== cat tap (robust) ===== */
+/* ===== cat tap (mini game) ===== */
 function countCatTap(clientX, clientY){
   const now = performance.now();
-  if (now - lastTapStamp < 90) return; // anti double trigger
+  if (now - lastTapStamp < 90) return;
   lastTapStamp = now;
 
   catTapCount++;
@@ -422,17 +571,18 @@ function countCatTap(clientX, clientY){
   const r = stage.getBoundingClientRect();
   spawnSparkle(clientX - r.left, clientY - r.top, 18, 1.25);
 
-  if (catTapCount < CONFIG.catTapsNeeded) toast(`tap kucing: ${catTapCount}/${CONFIG.catTapsNeeded}`);
-  else if (catTapCount === CONFIG.catTapsNeeded) openSecret();
-  else toast("udah kebuka 😭");
+  if (catTapCount < CONFIG.catTapsNeeded){
+    meowBubble(pick(["mew","meow","nya~","purr"]), catEl);
+    toast(`tap kucing: ${catTapCount}/${CONFIG.catTapsNeeded}`);
+    vibrate(10);
+  } else if (catTapCount === CONFIG.catTapsNeeded){
+    meowBubble("OK! 🌸", catEl);
+    openSecret();
+  } else {
+    toast("udah kebuka 😭");
+  }
 }
-
-catEl.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  countCatTap(e.clientX, e.clientY);
-});
-
-// pointer drag support (tetap ada)
+catEl.addEventListener("click", (e)=>{ e.stopPropagation(); countCatTap(e.clientX, e.clientY); });
 catEl.addEventListener("pointerdown", (e)=>{
   e.stopPropagation();
   catPress = { x: e.clientX, y: e.clientY, t: performance.now() };
@@ -458,10 +608,8 @@ catEl.addEventListener("pointerup", (e)=>{
   const dt = performance.now() - catPress.t;
   const isTap = !catDragging && Math.abs(dx) < 10 && Math.abs(dy) < 10 && dt < 320;
 
-  // kalau tap via pointer, hitung di sini juga (biar iOS/Android stabil)
   if (isTap) countCatTap(e.clientX, e.clientY);
 
-  // balik halus kalau drag
   if (catDragging){
     catEl.animate(
       [{ transform: catEl.style.transform || "" }, { transform: "translate3d(0,0,0) rotate(0deg)" }],
@@ -513,17 +661,17 @@ function renderSlides(){
           <div class="flipInner" data-flipinner="1">
             <div class="face front">${frontCardHTML}</div>
             <div class="face back">
-              <div class="card backCard" data-flipback="1">
+              <div class="card" data-flipback="1" style="text-align:center;">
                 <div class="kicker mono">
                   <span>✨ flipped</span>
                   <span class="mono" style="opacity:.7;">tap kartu buat flip balik</span>
                 </div>
 
-                <div class="backTitle">Happy New Year 💗</div>
-                <p class="backText">Kamu sampai di akhir. Good. 🫶</p>
+                <div class="title" style="margin-top:8px;">Happy New Year 🌸</div>
+                <p class="text" style="margin-top:8px;">Kamu sampai di akhir. Good. 🫶</p>
 
                 <div class="note show" style="display:block;">${escapeHtml(s.note || "Semoga tahun depan lebih baik ya.")}</div>
-                <p class="backHint mono">Mini-game: tap kucing 5x untuk buka pesan rahasia 🐱</p>
+                <p class="small mono" style="margin-top:12px;">Mini-game: tap kucing 5x untuk buka pesan rahasia 🐱</p>
               </div>
             </div>
           </div>
@@ -537,51 +685,15 @@ function renderSlides(){
 
     const d = document.createElement("div");
     d.className = "dot";
-    d.addEventListener("click", (e)=>{ e.stopPropagation(); goTo(i); });
+    d.addEventListener("click", (e)=>{ e.stopPropagation(); transitionTo(i); });
     dotsEl.appendChild(d);
   });
-
-  // tap card: toggle note / flip
-  stage.addEventListener("click", (e)=>{
-    if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
-
-    const active = stage.querySelector(".slide.active");
-    if (!active) return;
-
-    const r = stage.getBoundingClientRect();
-    spawnSparkle(e.clientX - r.left, e.clientY - r.top, 10, 0.95);
-
-    const isLast = Number(active.dataset.i) === slides.length - 1;
-
-    if (isLast){
-      const flipInner = active.querySelector("[data-flipinner='1']");
-      const flipBack = e.target.closest("[data-flipback='1']");
-      const card = e.target.closest("[data-card='1']");
-      if (flipBack || card){
-        e.stopPropagation();
-        if (flipInner) flipInner.classList.toggle("flipped");
-        spawnConfetti(18);
-        vibrate(10);
-        return;
-      }
-    } else {
-      const card = e.target.closest("[data-card='1']");
-      if (card){
-        e.stopPropagation();
-        const note = card.querySelector("[data-note='1']");
-        if (note) note.classList.toggle("show");
-        vibrate(10);
-        return;
-      }
-    }
-  }, { passive:false });
 }
 
-/* ===== Next positioning ===== */
+/* ===== Next positioning (anti tabrakan kucing + badge) ===== */
 function rectIntersects(a,b){
   return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
 }
-
 function setNextLabel(){ floatNext.textContent = pick(CONFIG.nextLabels); }
 
 function placeNextTarget(){
@@ -617,21 +729,19 @@ function placeNextTarget(){
     if (rectIntersects(b, catR)) continue;
     if (rectIntersects(b, badgeR)) continue;
 
-    nextTo.x = x;
-    nextTo.y = y;
+    nextTo.x = x; nextTo.y = y;
     return;
   }
 
   nextTo.x = clamp(W*0.30, pad + bw/2, W - pad - bw/2);
   nextTo.y = clamp(H*0.60, 10 + bh/2, H - 10 - bh/2);
 }
-
 function updateNextButton(){
   setNextLabel();
   requestAnimationFrame(placeNextTarget);
 }
 
-/* transitions */
+/* ===== transitions ===== */
 function transitionTo(newIndex){
   if (transitioning) return;
   const max = slides.length - 1;
@@ -643,23 +753,26 @@ function transitionTo(newIndex){
   const current = stage.querySelector(`.slide[data-i="${index}"]`);
   const next = stage.querySelector(`.slide[data-i="${newIndex}"]`);
 
+  const enterClass = pick(CONFIG.enterVariants);
+  const exitClass  = pick(CONFIG.exitVariants);
+
   if (next){
-    next.classList.add("active", "enter");
+    next.classList.add("active", enterClass);
     next.setAttribute("aria-hidden", "false");
     const note = next.querySelector("[data-note='1']");
     if (note) note.classList.remove("show");
   }
-  if (current) current.classList.add("exit");
+  if (current) current.classList.add(exitClass);
 
   const done = ()=>{
     if (current){
-      current.classList.remove("active","exit","enter");
+      current.className = "slide";
       current.setAttribute("aria-hidden", "true");
       const inner = current.querySelector("[data-flipinner='1']");
       if (inner) inner.classList.remove("flipped");
     }
     if (next){
-      next.classList.remove("enter","exit");
+      next.classList.remove(enterClass, exitClass);
       next.classList.add("active");
       next.setAttribute("aria-hidden", "false");
     }
@@ -668,15 +781,18 @@ function transitionTo(newIndex){
     setBG(index);
     updateDots();
     updateSegments();
-    updateCounter();
+    updateHeader();
     updateNextButton();
 
+    // ✅ auto flip + party heboh
     if (index === max && !lastSlideAutoFlipped){
       lastSlideAutoFlipped = true;
       const inner = next ? next.querySelector("[data-flipinner='1']") : null;
       setTimeout(()=>{
         if (inner) inner.classList.add("flipped");
-        spawnConfetti(38);
+        spawnConfetti(40);
+        vibrate(16);
+        megaCelebrate();
       }, 520);
     }
 
@@ -692,10 +808,9 @@ function transitionTo(newIndex){
   current.addEventListener("animationend", onEnd);
 }
 
-function goTo(i){ transitionTo(i); }
 function next(){
   if (index >= slides.length - 1){
-    toast("udah terakhir 💗");
+    toast("udah terakhir 🌸");
     spawnConfetti(28);
     return;
   }
@@ -718,16 +833,186 @@ floatNext.addEventListener("click", (e)=>{
   next();
 });
 
-/* pointer tracking: parallax + card tilt + sparkle trail */
+/* ===== swipe navigation (mobile) ===== */
+function shouldIgnoreGesture(target){
+  return !!target.closest("#dock, #cat, #floatNext, button, input, label, .sheet, .overlay");
+}
+stage.addEventListener("pointerdown", (e)=>{
+  if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
+  if (shouldIgnoreGesture(e.target)) return;
+  if (e.pointerType === "touch" || e.pointerType === "pen"){
+    swipe = { x: e.clientX, y: e.clientY, t: performance.now() };
+  }
+});
+stage.addEventListener("pointerup", (e)=>{
+  if (!swipe) return;
+  const dx = e.clientX - swipe.x;
+  const dy = e.clientY - swipe.y;
+  const dt = performance.now() - swipe.t;
+  swipe = null;
+
+  if (dt > 500) return;
+  if (Math.abs(dx) > 55 && Math.abs(dy) < 40){
+    if (dx < 0) { next(); toast("swipe → next"); }
+    else { prev(); toast("swipe → back"); }
+    vibrate(10);
+  }
+});
+
+/* ===== card interactions ===== */
+function isDoubleTap(e){
+  const now = performance.now();
+  const dx = e.clientX - lastCardTap.x;
+  const dy = e.clientY - lastCardTap.y;
+  const ok = (now - lastCardTap.t) < 260 && (dx*dx + dy*dy) < (26*26);
+  lastCardTap = { t: now, x: e.clientX, y: e.clientY };
+  return ok;
+}
+
+stage.addEventListener("pointerdown", (e)=>{
+  if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
+  if (shouldIgnoreGesture(e.target)) return;
+
+  const card = e.target.closest("[data-card='1']");
+  if (!card) return;
+
+  clearTimeout(holdTimer);
+  holdTimer = setTimeout(()=>{
+    const note = card.querySelector("[data-note='1']");
+    if (note){
+      note.classList.toggle("show");
+      vibrate(14);
+      toast(note.classList.contains("show") ? "note: ON" : "note: OFF");
+    }
+  }, 420);
+}, { passive:true });
+
+stage.addEventListener("pointerup", ()=>{ clearTimeout(holdTimer); holdTimer=null; }, { passive:true });
+stage.addEventListener("pointercancel", ()=>{ clearTimeout(holdTimer); holdTimer=null; }, { passive:true });
+
+stage.addEventListener("click", (e)=>{
+  if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
+
+  const active = stage.querySelector(".slide.active");
+  if (!active) return;
+
+  const r = stage.getBoundingClientRect();
+  spawnSparkle(e.clientX - r.left, e.clientY - r.top, 10, 0.95);
+
+  const isLast = Number(active.dataset.i) === slides.length - 1;
+
+  if (e.target.closest("[data-card='1'], [data-flipback='1']") && isDoubleTap(e)){
+    sakuraCount += 1;
+    heartCountEl.textContent = String(sakuraCount);
+    spawnPetals(e.clientX, e.clientY, 12);
+    toast("🌸 +1");
+    vibrate(12);
+    return;
+  }
+
+  if (isLast){
+    const flipInner = active.querySelector("[data-flipinner='1']");
+    const flipBack = e.target.closest("[data-flipback='1']");
+    const card = e.target.closest("[data-card='1']");
+    if (flipBack || card){
+      e.stopPropagation();
+      if (flipInner){
+        const willFlipToBack = !flipInner.classList.contains("flipped");
+        flipInner.classList.toggle("flipped");
+        if (willFlipToBack) megaCelebrate(); // ✅ heboh saat flip ke belakang
+      }
+      spawnConfetti(18);
+      vibrate(10);
+      return;
+    }
+  } else {
+    const card = e.target.closest("[data-card='1']");
+    if (card){
+      e.stopPropagation();
+      const note = card.querySelector("[data-note='1']");
+      if (note) note.classList.toggle("show");
+      vibrate(8);
+      return;
+    }
+  }
+}, { passive:false });
+
+/* ===== react button ===== */
+let sakuraHold = null;
+function petalAdd(n=1){
+  sakuraCount += n;
+  heartCountEl.textContent = String(sakuraCount);
+
+  const sr = stage.getBoundingClientRect();
+  const br = heartBtn.getBoundingClientRect();
+  const cx = (br.left + br.right)/2;
+  const cy = Math.max(sr.top+50, br.top);
+  spawnPetals(cx, cy, clamp(8 + n, 10, 26));
+  if (n >= 6) spawnConfetti(10);
+}
+heartBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  petalAdd(1);
+  toast("🌸 +1");
+  vibrate(10);
+});
+heartBtn.addEventListener("pointerdown", (e)=>{
+  e.stopPropagation();
+  let c = 0;
+  clearInterval(sakuraHold);
+  sakuraHold = setInterval(()=>{
+    c++;
+    petalAdd(1);
+    if (c % 6 === 0) vibrate(8);
+    if (c >= 18){
+      clearInterval(sakuraHold);
+      sakuraHold = null;
+      toast("oke cukup 😭");
+    }
+  }, 120);
+});
+heartBtn.addEventListener("pointerup", ()=>{ clearInterval(sakuraHold); sakuraHold=null; });
+heartBtn.addEventListener("pointercancel", ()=>{ clearInterval(sakuraHold); sakuraHold=null; });
+
+/* pointer tracking */
 stage.addEventListener("pointermove", (e)=>{
   const r = stage.getBoundingClientRect();
   pointer.x = (e.clientX - r.left) / r.width;
   pointer.y = (e.clientY - r.top) / r.height;
   pointer.active = true;
-
   spawnSparkle(e.clientX - r.left, e.clientY - r.top, 2, 0.65);
 }, { passive:true });
 stage.addEventListener("pointerleave", ()=>{ pointer.active = false; }, { passive:true });
+
+/* sensors: tilt + shake */
+async function enableSensors(){
+  try{
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function"){
+      const res = await DeviceMotionEvent.requestPermission();
+      if (res !== "granted") return;
+    }
+  }catch{}
+
+  window.addEventListener("deviceorientation", (e)=>{
+    if (e.gamma == null || e.beta == null) return;
+    tilt.enabled = true;
+    tilt.x = clamp(e.gamma / 30, -1, 1);
+    tilt.y = clamp(e.beta / 40, -1, 1);
+  }, { passive:true });
+
+  window.addEventListener("devicemotion", (e)=>{
+    const a = e.accelerationIncludingGravity;
+    if (!a) return;
+    const m = Math.sqrt((a.x||0)**2 + (a.y||0)**2 + (a.z||0)**2);
+    const now = performance.now();
+    if (m > 22 && (now - lastShakeAt) > 900){
+      lastShakeAt = now;
+      spawnConfetti(42);
+      toast("shake ✨");
+      vibrate(18);
+    }
+  }, { passive:true });
+}
 
 /* start modal */
 function openStart(){
@@ -743,11 +1028,15 @@ function getSelectedTrack(){
   return r ? r.value : null;
 }
 
-startBtn.addEventListener("click", ()=>{
-  toName = inputTo.value.trim() || "Teman";
-  fromName = inputFrom.value.trim() || "Aku";
+startBtn.addEventListener("click", async ()=>{
+  toName = FIXED_TO;
+  fromName = FIXED_FROM;
 
-  // reset state biar consistent
+  // reset party
+  finalPartyDone = false;
+  stage.classList.remove("party");
+  if (partyLayer) partyLayer.innerHTML = "";
+
   catTapCount = 0;
   lastTapStamp = 0;
   lastSlideAutoFlipped = false;
@@ -767,6 +1056,8 @@ startBtn.addEventListener("click", ()=>{
     tryPlayMusic("start");
   }
 
+  enableSensors().catch(()=>{});
+
   buildSlides();
   renderSlides();
 
@@ -775,7 +1066,7 @@ startBtn.addEventListener("click", ()=>{
 
   const s0 = stage.querySelector(`.slide[data-i="0"]`);
   if (s0){
-    s0.classList.add("active", "enter");
+    s0.classList.add("active", pick(CONFIG.enterVariants));
     s0.setAttribute("aria-hidden", "false");
   }
 
@@ -783,10 +1074,11 @@ startBtn.addEventListener("click", ()=>{
   prevBtn.disabled = true;
 
   updateSegments();
-  updateCounter();
+  updateHeader();
 
   resizeFx();
-  // init Next position
+  makePetals();
+
   const d = dock.getBoundingClientRect();
   nextNow.x = d.width * 0.32;
   nextNow.y = d.height * 0.62;
@@ -797,23 +1089,29 @@ startBtn.addEventListener("click", ()=>{
   updateNextButton();
 
   closeStart();
-  toast("ok, mulai 💗");
+  toast("mulai 🌸 (swipe kiri/kanan)");
   spawnConfetti(22);
   vibrate(14);
 });
 
-/* ===== smooth engine loop ===== */
+/* engine loop */
 let lastT = performance.now();
 function engine(t){
   const dt = Math.min(34, t - lastT);
   lastT = t;
 
   if (!prefersReduce){
-    // parallax target
-    const tx = (pointer.x - 0.5) * 2;
-    const ty = (pointer.y - 0.5) * 2;
-    parTo.x = pointer.active ? tx : 0;
-    parTo.y = pointer.active ? ty : 0;
+    let tx = 0, ty = 0;
+    if (pointer.active){
+      tx = (pointer.x - 0.5) * 2;
+      ty = (pointer.y - 0.5) * 2;
+    } else if (tilt.enabled){
+      tx = tilt.x;
+      ty = tilt.y;
+    }
+
+    parTo.x = tx;
+    parTo.y = ty;
 
     parNow.x = lerp(parNow.x, parTo.x, 0.10);
     parNow.y = lerp(parNow.y, parTo.y, 0.10);
@@ -826,13 +1124,11 @@ function engine(t){
       el.style.transform = `translate3d(${px}px, ${py}px, 0)`;
     }
 
-    // smooth next movement
     nextNow.x = lerp(nextNow.x, nextTo.x, 0.16);
     nextNow.y = lerp(nextNow.y, nextTo.y, 0.16);
     document.documentElement.style.setProperty("--nx", `${nextNow.x.toFixed(2)}px`);
     document.documentElement.style.setProperty("--ny", `${nextNow.y.toFixed(2)}px`);
 
-    // card tilt + shine
     const activeCard = stage.querySelector(".slide.active .card");
     if (activeCard){
       const rx = clamp((parNow.y * -7), -7, 7);
@@ -840,8 +1136,8 @@ function engine(t){
       document.documentElement.style.setProperty("--rx", `${rx.toFixed(2)}deg`);
       document.documentElement.style.setProperty("--ry", `${ry.toFixed(2)}deg`);
 
-      const mx = clamp(pointer.x * 100, 0, 100);
-      const my = clamp(pointer.y * 100, 0, 100);
+      const mx = clamp(pointer.active ? pointer.x * 100 : 50 + (parNow.x*10), 0, 100);
+      const my = clamp(pointer.active ? pointer.y * 100 : 45 + (parNow.y*10), 0, 100);
       document.documentElement.style.setProperty("--mx", `${mx.toFixed(1)}%`);
       document.documentElement.style.setProperty("--my", `${my.toFixed(1)}%`);
     }
@@ -853,6 +1149,7 @@ function engine(t){
 
 /* init */
 setBG(0);
+updateHeader();
 openStart();
 resizeFx();
 requestAnimationFrame(engine);
