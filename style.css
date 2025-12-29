@@ -13,15 +13,20 @@
   --r: 18px;
   --ease: cubic-bezier(.2,.9,.2,1);
 
-  /* dock aman bawah */
-  --dockH: 184px;
+  --dockH: 194px;
 
-  /* posisi tombol next via CSS var (smooth) */
+  /* Next smooth */
   --nx: 0px;
   --ny: 0px;
 
-  /* progress ring kucing (0..1) */
+  /* Cat progress ring */
   --catP: 0;
+
+  /* Card tilt + shine */
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 40%;
 }
 
 *{ box-sizing:border-box; }
@@ -36,7 +41,7 @@ body{
     radial-gradient(circle at 36px 36px, rgba(255,147,197,.10) 2px, transparent 2.2px),
     linear-gradient(180deg, var(--bg1), var(--bg2));
   background-size: 48px 48px, 48px 48px, auto;
-  transition: background 650ms var(--ease);
+  transition: background 700ms var(--ease);
   overflow:hidden;
 }
 
@@ -53,7 +58,6 @@ body{
   gap:10px;
 }
 
-/* Top */
 .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
 .pill{
   display:inline-flex; align-items:center;
@@ -96,7 +100,7 @@ body{
   box-shadow: var(--shadow);
 }
 
-/* FX Canvas */
+/* FX canvas */
 .fx{
   position:absolute;
   inset:0;
@@ -104,7 +108,7 @@ body{
   pointer-events:none;
 }
 
-/* story segments */
+/* segments */
 .segments{
   position:absolute;
   left:10px; right:10px; top:10px;
@@ -137,13 +141,8 @@ body{
   50%{ width: 62%; opacity: 1; }
 }
 
-/* Decor layer */
-.decor{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index: 10;
-}
+/* decor */
+.decor{ position:absolute; inset:0; pointer-events:none; z-index: 10; }
 .sticker{
   position:absolute;
   opacity: .96;
@@ -160,19 +159,18 @@ body{
 .s2{ right: 12px; top: 30px; width: 70px; animation-duration: 3.1s; }
 .s4{ left: 10px; bottom: 18px; width: 74px; opacity:.88; animation-duration: 3.6s; }
 
-/* ✅ DOCK BAWAH (SAFE ZONE) */
+/* DOCK */
 .dock{
-  position:absolute;
-  left:0; right:0; bottom:0;
+  position:absolute; left:0; right:0; bottom:0;
   height: var(--dockH);
   z-index: 70;
   pointer-events:none;
   background:
     radial-gradient(circle at 30% 40%, rgba(255,95,162,.12), transparent 55%),
-    linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.84));
+    linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.88));
 }
 
-/* slide: kasih ruang supaya card gak ketimpa dock */
+/* slides */
 .slide{
   position:absolute; inset:0;
   padding: 70px 18px calc(var(--dockH) + 14px);
@@ -187,7 +185,6 @@ body{
 }
 .slide.active{ opacity:1; pointer-events:auto; }
 
-/* card */
 .card{
   border-radius: 22px;
   border:1px solid rgba(255,95,162,.22);
@@ -197,8 +194,28 @@ body{
   position:relative;
   transition: transform 180ms var(--ease);
   will-change: transform;
+  transform:
+    perspective(900px)
+    rotateX(var(--rx)) rotateY(var(--ry))
+    translate3d(0,0,0);
 }
-.card:active{ transform: scale(.99); }
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius: 22px;
+  background: radial-gradient(circle at var(--mx) var(--my), rgba(255,95,162,.18), transparent 48%);
+  opacity:.70;
+  pointer-events:none;
+  mix-blend-mode: multiply;
+}
+.card:active{
+  transform:
+    perspective(900px)
+    rotateX(var(--rx)) rotateY(var(--ry))
+    translate3d(0,0,0)
+    scale(.99);
+}
 
 .kicker{ display:flex; align-items:center; justify-content:space-between; gap:10px; color: var(--muted2); font-size:12px; }
 .title{
@@ -225,9 +242,9 @@ body{
 }
 .note.show{ display:block; }
 
-/* flip last slide */
+/* flip */
 .flipWrap{ perspective: 1200px; }
-.flipInner{ position:relative; transform-style: preserve-3d; transition: transform 560ms var(--ease); will-change: transform; }
+.flipInner{ position:relative; transform-style: preserve-3d; transition: transform 620ms var(--ease); will-change: transform; }
 .flipInner.flipped{ transform: rotateY(180deg); }
 .face{ backface-visibility:hidden; -webkit-backface-visibility:hidden; }
 .face.back{ position:absolute; inset:0; transform: rotateY(180deg); }
@@ -241,41 +258,38 @@ body{
 .backText{ margin:0; color: var(--muted); font-size:15px; line-height:1.75; }
 .backHint{ margin-top:12px; color: var(--muted2); font-size:12px; }
 
-/* smooth transitions (lebih lembut) */
-.slide.enter{ animation: enterSoft 520ms var(--ease) both; }
-.slide.exit{ animation: exitSoft 520ms var(--ease) both; }
+/* smoother transitions */
+.slide.enter{ animation: enterSoft 560ms var(--ease) both; }
+.slide.exit{ animation: exitSoft 560ms var(--ease) both; }
 @keyframes enterSoft{
-  0%{ opacity:0; transform: translate3d(0,18px,0) scale(.98); filter: blur(1px); }
+  0%{ opacity:0; transform: translate3d(0,18px,0) scale(.985); filter: blur(1px); }
   65%{ opacity:1; transform: translate3d(0,-6px,0) scale(1.01); filter: blur(0); }
   100%{ opacity:1; transform: translate3d(0,0,0) scale(1); }
 }
 @keyframes exitSoft{
   0%{ opacity:1; transform: translate3d(0,0,0) scale(1); filter: blur(0); }
-  100%{ opacity:0; transform: translate3d(0,20px,0) scale(.98); filter: blur(1px); }
+  100%{ opacity:0; transform: translate3d(0,22px,0) scale(.985); filter: blur(1px); }
 }
 
-/* ===== Dock elements ===== */
+/* cat ring + cat */
 .catLayer{
   position:absolute;
   right: 10px;
   bottom: 10px;
-  width: 170px;
+  width: 180px;
   height: calc(var(--dockH) - 14px);
   pointer-events:none;
 }
-
-/* progress ring around cat */
 .catLayer::before{
   content:"";
   position:absolute;
   right: 12px;
   bottom: 8px;
-  width: 132px;
-  height: 132px;
+  width: 136px;
+  height: 136px;
   border-radius: 999px;
   background:
     conic-gradient(rgba(255,95,162,.85) calc(var(--catP) * 1turn), rgba(255,95,162,.10) 0);
-  filter: blur(.0px);
   opacity:.92;
   transform: rotate(-90deg);
   box-shadow: 0 18px 60px rgba(255,95,162,.12);
@@ -285,19 +299,17 @@ body{
   position:absolute;
   right: 18px;
   bottom: 14px;
-  width: 120px;
-  height: 120px;
+  width: 124px;
+  height: 124px;
   border-radius: 999px;
   background: rgba(255,255,255,.78);
   border: 1px solid rgba(255,95,162,.18);
 }
-
-/* cat on top of ring */
 .cat{
   position:absolute;
-  right: 22px;
-  bottom: 18px;
-  width: 108px;
+  right: 26px;
+  bottom: 20px;
+  width: 104px;
   pointer-events:auto;
   touch-action:none;
   cursor:pointer;
@@ -306,11 +318,10 @@ body{
   will-change: transform;
   transform: translate3d(0,0,0);
 }
-
 .catBadge{
   position:absolute;
   right: 6px;
-  bottom: 132px;
+  bottom: 140px;
   padding: 7px 10px;
   border-radius: 999px;
   border: 1px solid rgba(255,95,162,.24);
@@ -321,11 +332,10 @@ body{
   pointer-events:none;
 }
 
-/* Floating Next button - now smooth via vars */
+/* Next button: smooth via vars */
 .floatNext{
   position:absolute;
-  left:0;
-  top:0;
+  left:0; top:0;
   transform: translate3d(var(--nx), var(--ny), 0) translate(-50%, -50%);
   z-index: 75;
   pointer-events:auto;
@@ -343,15 +353,12 @@ body{
   animation: floatBtn 1.55s var(--ease) infinite;
 }
 .floatNext::after{ content:"➜"; margin-left:8px; opacity:.95; }
-.floatNext:active{
-  filter: brightness(1.02);
-}
 @keyframes floatBtn{
   0%,100%{ transform: translate3d(var(--nx), var(--ny), 0) translate(-50%, -50%) rotate(-1deg); }
   50%{ transform: translate3d(var(--nx), calc(var(--ny) - 6px), 0) translate(-50%, -50%) rotate(1deg); }
 }
 
-/* Bottom */
+/* bottom */
 .bottom{ display:flex; flex-direction:column; gap:10px; }
 .dots{ display:flex; justify-content:center; gap:8px; }
 .dot{
@@ -420,7 +427,7 @@ body{
   z-index: 120;
 }
 
-/* overlay modal */
+/* overlays */
 .overlay{
   position:fixed;
   inset:0;
@@ -495,12 +502,11 @@ body{
 .sheetHint{ margin-top:10px; color: var(--muted2); font-size: 11px; text-align:center; }
 
 @media (max-width: 420px){
-  :root{ --dockH: 196px; }
+  :root{ --dockH: 202px; }
   .grid{ grid-template-columns: 1fr; }
-  .catBadge{ bottom: 140px; }
 }
-
 @media (prefers-reduced-motion: reduce){
   body{ transition:none; }
   .sticker, .floatNext{ animation:none !important; }
+  .card{ transform:none !important; }
 }
