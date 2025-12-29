@@ -2,15 +2,14 @@
   --bg1:#ffe6f2;
   --bg2:#ffffff;
 
-  --stroke: rgba(255, 95, 162, .22);
   --text:#1d1d1f;
   --muted:#5b5b62;
   --muted2:#7a7a84;
 
   --pink:#ff5fa2;
   --pink2:#ff93c5;
-  --shadow: 0 22px 60px rgba(255, 95, 162, .18);
 
+  --shadow: 0 22px 60px rgba(255, 95, 162, .18);
   --r: 18px;
   --ease: cubic-bezier(.2,.9,.2,1);
 }
@@ -28,6 +27,7 @@ body{
     linear-gradient(180deg, var(--bg1), var(--bg2));
   background-size: 48px 48px, 48px 48px, auto;
   transition: background 500ms var(--ease);
+
   overflow:hidden;
 }
 
@@ -77,7 +77,6 @@ body{
 .iconBtn:active{ transform: scale(.98); }
 .iconBtn.off{ opacity:.75; filter: grayscale(.25); }
 
-/* Stage */
 .stage{
   position:relative;
   overflow:hidden;
@@ -93,7 +92,7 @@ body{
   left:10px; right:10px; top:10px;
   display:flex;
   gap:6px;
-  z-index: 12;
+  z-index: 30;
 }
 .seg{
   flex:1;
@@ -109,11 +108,19 @@ body{
   height:100%;
   border-radius:999px;
   background: linear-gradient(90deg, rgba(255,95,162,.92), rgba(255,147,197,.92));
-  transition: width 160ms var(--ease);
+  transition: width 220ms var(--ease);
+}
+.seg.current > i{
+  width: 52%;
+  animation: breathe 1.2s var(--ease) infinite;
+}
+@keyframes breathe{
+  0%,100%{ width: 40%; opacity: .85; }
+  50%{ width: 60%; opacity: 1; }
 }
 
 /* stickers */
-.stickers{ position:absolute; inset:0; pointer-events:none; z-index:2; }
+.stickers{ position:absolute; inset:0; pointer-events:none; z-index:5; }
 .sticker{
   position:absolute;
   opacity: .96;
@@ -130,30 +137,27 @@ body{
 .s3{ right: 8px; bottom: 8px; width: 120px; animation-duration: 4.2s; }
 .s4{ left: 10px; bottom: 18px; width: 74px; opacity:.88; animation-duration: 3.6s; }
 
-/* cat interactive */
-.cat{
-  pointer-events:auto;
-  touch-action:none;
-  cursor: pointer;
-}
+.cat{ pointer-events:auto; touch-action:none; cursor:pointer; }
 
-/* cat badge */
+/* ✅ cat badge: naik z-index & posisinya dekat kucing, tidak nutup card */
 .catBadge{
   position:absolute;
-  right: 12px;
-  bottom: 132px;
+  right: 18px;
+  bottom: 140px;
   padding: 7px 10px;
   border-radius: 999px;
   border: 1px solid rgba(255,95,162,.24);
-  background: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.90);
   color: var(--muted);
   font-size: 11px;
   box-shadow: 0 18px 60px rgba(255,95,162,.12);
-  opacity: .95;
+  opacity: .98;
+  z-index: 35;         /* <-- ini yang bikin gak ketutup card */
+  pointer-events: none;
 }
 
 /* particles */
-.hearts{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:20; }
+.hearts{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:40; }
 .heart{
   position:absolute;
   opacity:0;
@@ -167,20 +171,22 @@ body{
   100%{ opacity:0; transform: translate(-50%, -110%) scale(.9); }
 }
 
-/* slides */
+/* slides base */
 .slide{
   position:absolute; inset:0;
   padding: 22px 18px;
   display:flex; flex-direction:column; justify-content:center;
   opacity:0;
-  transform: translateX(14%) scale(.98);
-  transition: transform .34s var(--ease), opacity .34s var(--ease);
-  z-index:10;
+  transform: translateX(0) translateY(0) rotate(0) scale(1);
+  z-index: 12;
+  pointer-events:none;
 }
-.slide.active{ opacity:1; transform: translateX(0%) scale(1); }
-.slide.prev{ opacity:0; transform: translateX(-14%) scale(.98); }
+.slide.active{
+  opacity:1;
+  pointer-events:auto;
+}
 
-/* card */
+/* cards */
 .card{
   border-radius: 22px;
   border:1px solid rgba(255,95,162,.22);
@@ -191,7 +197,6 @@ body{
   transition: transform 160ms var(--ease);
 }
 .card:active{ transform: scale(.99); }
-
 .kicker{ display:flex; align-items:center; justify-content:space-between; gap:10px; color: var(--muted2); font-size:12px; }
 .title{
   font-family: Nunito, Inter, system-ui, sans-serif;
@@ -233,7 +238,64 @@ body{
 .backText{ margin:0; color: var(--muted); font-size:15px; line-height:1.75; }
 .backHint{ margin-top:12px; color: var(--muted2); font-size:12px; }
 
-/* bottom */
+/* ===== Random transition animations ===== */
+.slide.enter-pop{ animation: enterPop 520ms var(--ease) both; }
+.slide.enter-rise{ animation: enterRise 520ms var(--ease) both; }
+.slide.enter-zoom{ animation: enterZoom 520ms var(--ease) both; }
+.slide.enter-wiggle{ animation: enterWiggle 560ms var(--ease) both; }
+.slide.enter-swipe{ animation: enterSwipe 520ms var(--ease) both; }
+
+.slide.exit-fall{ animation: exitFall 520ms var(--ease) both; }
+.slide.exit-paper{ animation: exitPaper 560ms var(--ease) both; }
+.slide.exit-spin{ animation: exitSpin 520ms var(--ease) both; }
+.slide.exit-sink{ animation: exitSink 520ms var(--ease) both; }
+.slide.exit-shatter{ animation: exitShatter 520ms var(--ease) both; }
+
+@keyframes enterPop{
+  0%{ opacity:0; transform: translateY(18px) scale(.94) rotate(-2deg); filter: blur(1px); }
+  60%{ opacity:1; transform: translateY(-6px) scale(1.02) rotate(1deg); filter: blur(0px); }
+  100%{ opacity:1; transform: translateY(0) scale(1) rotate(0); }
+}
+@keyframes enterRise{
+  0%{ opacity:0; transform: translateY(52px) rotate(2deg) scale(.98); }
+  100%{ opacity:1; transform: translateY(0) rotate(0) scale(1); }
+}
+@keyframes enterZoom{
+  0%{ opacity:0; transform: scale(.86) rotate(-1deg); filter: blur(1px); }
+  100%{ opacity:1; transform: scale(1) rotate(0); filter: blur(0px); }
+}
+@keyframes enterWiggle{
+  0%{ opacity:0; transform: translateX(26px) rotate(4deg) scale(.98); }
+  55%{ opacity:1; transform: translateX(-8px) rotate(-2deg) scale(1.01); }
+  100%{ opacity:1; transform: translateX(0) rotate(0) scale(1); }
+}
+@keyframes enterSwipe{
+  0%{ opacity:0; transform: translateX(-46px) skewX(6deg) scale(.98); }
+  100%{ opacity:1; transform: translateX(0) skewX(0) scale(1); }
+}
+
+@keyframes exitFall{
+  0%{ opacity:1; transform: translateY(0) rotate(0) scale(1); }
+  100%{ opacity:0; transform: translateY(70px) rotate(6deg) scale(.98); }
+}
+@keyframes exitPaper{
+  0%{ opacity:1; transform: translateY(0) rotate(0) scale(1); }
+  100%{ opacity:0; transform: translateY(120px) rotate(var(--rot, 10deg)) scale(.96); }
+}
+@keyframes exitSpin{
+  0%{ opacity:1; transform: translateX(0) rotate(0) scale(1); }
+  100%{ opacity:0; transform: translateX(40px) rotate(22deg) scale(.92); }
+}
+@keyframes exitSink{
+  0%{ opacity:1; transform: translateY(0) scale(1); filter: blur(0px); }
+  100%{ opacity:0; transform: translateY(30px) scale(.90); filter: blur(1px); }
+}
+@keyframes exitShatter{
+  0%{ opacity:1; transform: translateY(0) rotate(0) scale(1); }
+  100%{ opacity:0; transform: translateY(-30px) rotate(-14deg) scale(.92); }
+}
+
+/* Bottom */
 .bottom{ display:flex; flex-direction:column; gap:10px; }
 .dots{ display:flex; justify-content:center; gap:8px; }
 .dot{
@@ -255,7 +317,7 @@ body{
   background: rgba(255,255,255,.82);
   color: var(--text);
   cursor:pointer;
-  transition: transform .12s var(--ease), filter .12s var(--ease);
+  transition: transform .12s var(--ease);
   font-weight:700;
 }
 .btn:active{ transform: scale(.99); }
@@ -265,7 +327,7 @@ body{
   border-color: rgba(255,95,162,.30);
 }
 .btn.ghost{ background: rgba(255,255,255,.75); }
-.btn.bigBtn{ width:100%; padding:14px 14px; font-size:15px; }
+.hidden{ display:none !important; }
 
 .metaRow{ display:flex; align-items:center; gap:10px; }
 .reactBtn{
@@ -299,7 +361,43 @@ body{
   font-size:12px;
   max-width: calc(100% - 24px);
   text-align:center;
-  z-index: 80;
+  z-index: 120;
+}
+
+/* ===== Floating Next button ===== */
+.floatNext{
+  position:absolute;
+  left: 50%;
+  top: 76%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  border:1px solid rgba(255,95,162,.22);
+  background: linear-gradient(135deg, rgba(255,95,162,.92), rgba(255,147,197,.88));
+  color:#fff;
+  padding: 12px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+  font-weight: 900;
+  letter-spacing: .2px;
+  box-shadow: 0 22px 60px rgba(255,95,162,.22);
+  animation: floatBtn 1.4s var(--ease) infinite;
+}
+.floatNext::after{
+  content: "➜";
+  margin-left: 8px;
+  opacity: .95;
+}
+.floatNext:active{ transform: translate(-50%, -50%) scale(.98); }
+@keyframes floatBtn{
+  0%,100%{ transform: translate(-50%, -50%) rotate(-1deg); }
+  50%{ transform: translate(-50%, -56%) rotate(1deg); }
+}
+.floatNext.spawn{
+  animation: spawn 520ms var(--ease) both, floatBtn 1.4s var(--ease) infinite 520ms;
+}
+@keyframes spawn{
+  0%{ opacity:0; transform: translate(-50%, -40%) scale(.7) rotate(-6deg); }
+  100%{ opacity:1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
 }
 
 /* overlay modal */
@@ -311,7 +409,7 @@ body{
   align-items:center;
   justify-content:center;
   padding: 14px;
-  z-index: 90;
+  z-index: 200;
 }
 .overlay.show{ display:flex; }
 
@@ -339,11 +437,7 @@ body{
   margin: 10px 0 8px;
   font-size: 18px;
 }
-.grid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:10px;
-}
+.grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 .field span{ display:block; color: var(--muted2); font-size: 11px; margin-bottom:6px; }
 .field input{
   width:100%;
@@ -356,9 +450,7 @@ body{
 }
 .trackList{ display:flex; flex-direction:column; gap:10px; margin-top: 6px; }
 .trackItem{
-  display:flex;
-  gap:10px;
-  align-items:center;
+  display:flex; gap:10px; align-items:center;
   border:1px solid rgba(255,95,162,.20);
   background: rgba(255,255,255,.90);
   padding: 10px 10px;
@@ -376,12 +468,7 @@ body{
   cursor:pointer;
   font-weight: 900;
 }
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  margin: 10px 0 10px;
-}
+.row{ display:flex; justify-content:space-between; gap:10px; margin: 10px 0 10px; }
 .check{ display:flex; align-items:center; gap:8px; color: var(--muted); font-size: 12px; }
 .sheetText{ margin: 6px 0 0; color: var(--muted); font-size: 15px; line-height: 1.75; white-space: pre-wrap; }
 .sheetActions{ display:flex; gap:10px; margin-top:12px; }
@@ -389,12 +476,12 @@ body{
 
 @media (max-width: 420px){
   .grid{ grid-template-columns: 1fr; }
-  .catBadge{ bottom: 140px; }
+  .catBadge{ bottom: 150px; }
 }
 
 @media (prefers-reduced-motion: reduce){
   body{ transition:none; }
-  .slide, .btn, .iconBtn, .reactBtn, .card, .flipInner, .miniBtn{ transition:none; }
+  .floatNext, .slide, .miniBtn{ animation:none !important; }
   .heart{ animation:none; opacity:0; }
   .sticker{ animation:none; }
 }
