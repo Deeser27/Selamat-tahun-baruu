@@ -37,24 +37,24 @@
     </header>
 
     <main class="stage" id="stage" aria-live="polite">
-      <!-- story segments -->
       <div class="segments" id="segments" aria-hidden="true"></div>
 
-      <!-- floating Next button (random position) -->
+      <!-- Floating Next (posisi random tapi aman) -->
       <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
 
-      <!-- stickers -->
-      <div class="stickers" id="stickers" aria-hidden="true">
+      <!-- dekor (tidak interaktif) -->
+      <div class="decor" aria-hidden="true">
         <img class="sticker s1 par" data-depth="0.45" src="./assets/flower.svg" alt="" />
         <img class="sticker s2 par" data-depth="0.60" src="./assets/sparkle.svg" alt="" />
-        <img class="sticker s3 par cat" data-depth="0.85" src="./assets/cat.svg" alt="" />
         <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
-
-        <!-- ✅ cat badge: sekarang di atas card (nggak ketutup) -->
-        <div class="catBadge mono" id="catBadge" aria-hidden="true">tap kucing: 0/5</div>
       </div>
 
-      <!-- particles -->
+      <!-- layer interaktif khusus kucing + badge -->
+      <div class="catLayer" id="catLayer" aria-hidden="false">
+        <img class="sticker s3 par cat" data-depth="0.85" src="./assets/cat.svg" alt="cat" />
+        <div class="catBadge mono" id="catBadge">tap kucing: 0/5</div>
+      </div>
+
       <div class="hearts" id="hearts" aria-hidden="true"></div>
     </main>
 
@@ -63,8 +63,7 @@
 
       <div class="controls">
         <button class="btn ghost" id="prevBtn" type="button" aria-label="Sebelumnya">Back</button>
-
-        <!-- Next di footer sengaja disembunyikan (Next muncul random di stage). -->
+        <!-- fallback hidden -->
         <button class="btn primary hidden" id="nextBtn" type="button" aria-label="Berikutnya">Next</button>
       </div>
 
@@ -78,7 +77,7 @@
 
     <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
 
-    <!-- START POPUP (edit nama & track di sini) -->
+    <!-- START POPUP -->
     <div class="overlay show" id="startModal" aria-hidden="false">
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Mulai">
         <div class="sheetTop">
