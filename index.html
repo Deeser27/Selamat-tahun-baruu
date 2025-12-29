@@ -4,11 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#ff5fa2" />
-  <title>Happy New Year 💗</title>
+  <title>MEtt tahunn baruu</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Nunito:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./style.css" />
 </head>
 
@@ -16,8 +17,11 @@
   <div class="app" id="app">
     <header class="top">
       <div class="left">
-        <div class="pill mono" id="toTag">TO: -</div>
-        <div class="sub mono" id="subTag">ganti slide: klik tombol Next (tap layar nggak pindah)</div>
+        <div class="tagRow">
+          <div class="pill mono" id="fromTag">FROM: -</div>
+          <div class="pill mono" id="toTag">TO: -</div>
+        </div>
+        <div class="sub mono" id="subTag">Next = tombol / swipe (tap layar nggak pindah)</div>
       </div>
 
       <div class="right">
@@ -38,7 +42,12 @@
     <main class="stage" id="stage" aria-live="polite">
       <div class="segments" id="segments" aria-hidden="true"></div>
 
-      <!-- FX canvas -->
+      <!-- 🌸 background petals -->
+      <div class="petals" id="petals" aria-hidden="true"></div>
+
+      <!-- 🎉 final party layer (heboh) -->
+      <div class="partyLayer" id="partyLayer" aria-hidden="true"></div>
+
       <canvas id="fx" class="fx" aria-hidden="true"></canvas>
 
       <div class="decor" aria-hidden="true">
@@ -47,7 +56,6 @@
         <img class="sticker s4 par" data-depth="0.35" src="./assets/flower.svg" alt="" />
       </div>
 
-      <!-- DOCK bawah (aman) -->
       <div class="dock" id="dock" aria-hidden="false">
         <button class="floatNext" id="floatNext" type="button" aria-label="Next">Next</button>
 
@@ -67,10 +75,12 @@
       </div>
 
       <div class="metaRow">
-        <button class="reactBtn" id="heartBtn" type="button" aria-label="React heart">
-          💗 <span class="mono" id="heartCount">0</span>
+        <button class="reactBtn" id="heartBtn" type="button" aria-label="React sakura">
+          🌸 <span class="mono" id="heartCount">0</span>
         </button>
-        <div class="hint mono" id="hint">tap kartu = bonus • last slide: tap kartu = flip • tap kucing 5x = secret</div>
+        <div class="hint mono" id="hint">
+          
+        </div>
       </div>
     </footer>
 
@@ -80,29 +90,29 @@
     <div class="overlay show" id="startModal" aria-hidden="false">
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Mulai">
         <div class="sheetTop">
-          <div class="pill mono">SETUP 💗</div>
-          <div class="sheetSub mono">Pilih backsound + isi nama, lalu Start</div>
+          <div class="pill mono">SETUP 🌸</div>
+          <div class="sheetSub mono"> pilih backsoundnyaa, rekomendasiku ish yg ketiga WKWKWKWK</div>
         </div>
 
-        <div class="grid">
-          <label class="field">
-            <span class="mono">To</span>
-            <input id="inputTo" type="text" value="Teman Dekatku" maxlength="40" />
-          </label>
-
-          <label class="field">
-            <span class="mono">From</span>
-            <input id="inputFrom" type="text" value="Aku" maxlength="40" />
-          </label>
+        <div class="namePlate">
+          <div class="nameChip">
+            <div class="nameKey mono">FROM</div>
+            <div class="nameVal">ninuu</div>
+          </div>
+          <div class="nameHeart" aria-hidden="true"></div>
+          <div class="nameChip">
+            <div class="nameKey mono">TO</div>
+            <div class="nameVal">cheisyaa</div>
+          </div>
         </div>
 
-        <div class="sectionTitle mono">Backsound (3 opsi)</div>
+        <div class="sectionTitle mono">Backsounddnya</div>
 
         <div class="trackList" id="trackList">
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-1.mp3" checked />
             <div class="trackMeta">
-              <div class="trackName">Track 1</div>
+              <div class="trackName">lagu santaii </div>
               <div class="trackHint mono">assets/track-1.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="1">▶</button>
@@ -111,7 +121,7 @@
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-2.mp3" />
             <div class="trackMeta">
-              <div class="trackName">Track 2</div>
+              <div class="trackName">laguu santai juga, (bingung anajy mau isi lagu apa)</div>
               <div class="trackHint mono">assets/track-2.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="2">▶</button>
@@ -120,7 +130,7 @@
           <label class="trackItem">
             <input type="radio" name="track" value="./assets/track-3.mp3" />
             <div class="trackMeta">
-              <div class="trackName">Track 3</div>
+              <div class="trackName">Lagu kesukaanmu WKKWKWKW</div>
               <div class="trackHint mono">assets/track-3.mp3</div>
             </div>
             <button class="miniBtn" type="button" data-preview="3">▶</button>
@@ -128,14 +138,14 @@
         </div>
 
         <div class="row">
-          <label class="check mono"><input id="remember" type="checkbox" checked /> remember</label>
-          <label class="check mono"><input id="noMusic" type="checkbox" /> tanpa musik</label>
+          <label class="check mono"><input id="remember" type="checkbox" checked /> remember trackk</label>
+          <label class="check mono"><input id="noMusic" type="checkbox" /> tanpa musikk</label>
         </div>
 
-        <button class="btn primary bigBtn" id="startBtn" type="button">Start ✨</button>
+        <button class="btn primary bigBtn" id="startBtn" type="button">Starttt ✨</button>
 
         <div class="sheetHint mono">
-          Tip: kalau musik nggak bunyi, pastikan file mp3 ada di folder assets.
+          
         </div>
       </div>
     </div>
@@ -148,20 +158,19 @@
           <button class="xBtn" id="closeSecret" type="button" aria-label="Tutup">✕</button>
         </div>
 
-        <div class="sectionTitle">Pesan Rahasia</div>
+        <div class="sectionTitle">Ceritanyaa pesan rahasia gituu</div>
         <p class="sheetText" id="secretText"></p>
 
         <div class="sheetActions">
           <button class="btn ghost" id="copySecret" type="button">Copy</button>
-          <button class="btn primary" id="okSecret" type="button">Oke 💗</button>
+          <button class="btn primary" id="okSecret" type="button">Oke 🌸</button>
         </div>
 
-        <div class="sheetHint mono">ps: iya, ini secret beneran.</div>
+        <div class="sheetHint mono"> Kalo sampee ini berarti kamu beneran niatt liatinnya 🥺🥹</div>
       </div>
     </div>
   </div>
 
-  <!-- playsinline biar iOS nggak aneh -->
   <audio id="bgm" loop preload="auto" playsinline webkit-playsinline></audio>
   <script defer src="./app.js"></script>
 </body>
