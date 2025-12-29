@@ -1,14 +1,8 @@
 /* ==================================================
-   Core config (teks slide tetap di sini)
-   Nama & backsound default bisa kamu ubah di HTML popup
+   Config
    ================================================== */
 const CONFIG = {
-  tone: "lucu",
-
   musicVolume: 0.58,
-
-  // hold-to-auto-next (story style)
-  holdDurationMs: 2400,
 
   catTapsNeeded: 5,
   secretMessage:
@@ -23,40 +17,54 @@ const CONFIG = {
     ["#fff0f7", "#ffffff"],
   ],
 
+  // random "Next" button labels
+  nextLabels: [
+    "Next", "lanjut", "gas", "oke next", "klik aku", "next pls", "ayok", "terus?", "oke, lanjut"
+  ],
+
+  // random transition pairs
+  transitions: [
+    { enter: "enter-pop",  exit: "exit-fall"    },
+    { enter: "enter-rise", exit: "exit-paper"   },
+    { enter: "enter-zoom", exit: "exit-sink"    },
+    { enter: "enter-wiggle", exit:"exit-spin"   },
+    { enter: "enter-swipe", exit: "exit-shatter"}
+  ],
+
   slides: [
     {
       kicker: "happy new year 💗",
       title: "Selamat Tahun Baru!",
       text: "Semoga 2026 lebih baik… dan semoga kamu <span class='highlight'>nggak makin random</span> ya 😭",
-      foot: "tap untuk lanjut →",
+      foot: "klik tombol Next ya →",
       note: "Bonus: kalau kamu ketawa dikit aja, berarti misi aku sukses 😌"
     },
     {
       kicker: "terima kasih mode: ON",
       title: "Makasih ya.",
       text: "Makasih udah jadi teman dekat. Kamu kadang ngeselin… tapi <span class='highlight'>ngangenin juga</span>.",
-      foot: "aku akui itu.",
+      foot: "klik Next kalau sudah baca",
       note: "Btw: kalau kamu baca ini sambil senyum, aku menang."
     },
     {
       kicker: "small facts (real)",
       title: "Fakta singkat:",
       text: "Aku suka cara kamu hadir tanpa banyak drama. Tapi ya itu… <span class='highlight'>bales chat jangan kayak cicilan</span> ya 😌",
-      foot: "ini saran ramah.",
+      foot: "Next ada di mana ya…",
       note: "Aku serius tapi lucu. Seriusnya 20%, lucunya 80%."
     },
     {
       kicker: "reset button",
       title: "Kalau tahun ini berat…",
       text: "Yang bikin kamu capek: tinggalin. Yang bikin kamu senyum: simpen.",
-      foot: "deal?",
+      foot: "Next untuk lanjut",
       note: "Kalau kamu butuh tempat cerita, aku masih di sini."
     },
     {
       kicker: "wish list 🧁",
       title: "Doa aku simpel:",
       text: "Semoga kamu sehat, rezeki lancar, hati adem. Dan semoga kita tetap teman dekat.",
-      foot: "amin paling lucu.",
+      foot: "klik Next",
       note: "Bonus dua: semoga kamu makin sayang sama diri sendiri."
     },
     {
@@ -64,7 +72,7 @@ const CONFIG = {
       title: "Udah. Segitu.",
       text: "Selamat Tahun Baru. Terima kasih buat waktumu tahun ini. <span class='highlight'>Jangan hilang</span> ya—aku males cari teman baru 😭",
       foot: "— {{from}}",
-      note: "Kartu ini bisa flip. Coba tap kartu 😌"
+      note: "Kartu ini bisa flip. Tap kartu 😌"
     }
   ]
 };
@@ -94,8 +102,15 @@ function setBG(i){
   document.documentElement.style.setProperty("--bg2", pair[1]);
 }
 
-function vibrate(ms=12){
+function vibrate(ms=10){
   try{ if (navigator.vibrate) navigator.vibrate(ms); } catch {}
+}
+
+function randInt(a,b){
+  return (a + Math.floor(Math.random() * (b - a + 1)));
+}
+function pick(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
 }
 
 /* ==================================================
@@ -104,13 +119,16 @@ function vibrate(ms=12){
 const stage = $("#stage");
 const heartsLayer = $("#hearts");
 const dotsEl = $("#dots");
-const toTag = $("#toTag");
-const counterEl = $("#counter");
 const segmentsEl = $("#segments");
 const catBadge = $("#catBadge");
 
+const toTag = $("#toTag");
+const counterEl = $("#counter");
+
 const prevBtn = $("#prevBtn");
-const nextBtn = $("#nextBtn");
+const nextBtn = $("#nextBtn"); // hidden fallback
+const floatNext = $("#floatNext");
+
 const heartBtn = $("#heartBtn");
 const heartCountEl = $("#heartCount");
 
@@ -154,6 +172,7 @@ let musicOn = true;
 let userInteracted = false;
 let pickedObjectUrl = null;
 
+let transitioning = false;
 let lastSlideAutoFlipped = false;
 
 /* cat mini-game */
@@ -161,13 +180,8 @@ let catTapCount = 0;
 let catPress = null;
 let catDragging = false;
 
-/* hold-to-auto */
-let holdTimer = null;
-let holdStart = 0;
-let holding = false;
-
 /* ==================================================
-   Local storage load (optional)
+   Local storage
    ================================================== */
 function loadSaved(){
   try{
@@ -184,7 +198,6 @@ function loadSaved(){
     }
   }catch{}
 }
-
 function saveSetup(track){
   if (!remember.checked) return;
   try{
@@ -199,13 +212,18 @@ function saveSetup(track){
 loadSaved();
 
 /* ==================================================
-   Music helpers
+   Music
    ================================================== */
 function setMusicUI(){
   musicBtn.classList.toggle("off", !musicOn);
   musicIcon.textContent = musicOn ? "♪" : "♪×";
 }
 setMusicUI();
+
+function setTrack(src){
+  if (!src) return;
+  bgm.src = src;
+}
 
 function safePlayMusic(){
   if (!musicOn) return;
@@ -215,21 +233,11 @@ function safePlayMusic(){
 
 function stopMusic(){ bgm.pause(); }
 
-function setTrack(src){
-  if (!src) return;
-  bgm.src = src;
-}
-
 function toggleMusic(){
   musicOn = !musicOn;
   setMusicUI();
-  if (musicOn){
-    toast("music on 💗");
-    safePlayMusic();
-  } else {
-    toast("music off");
-    stopMusic();
-  }
+  if (musicOn){ toast("music on 💗"); safePlayMusic(); }
+  else { toast("music off"); stopMusic(); }
 }
 
 musicBtn.addEventListener("click", (e)=>{ e.stopPropagation(); toggleMusic(); });
@@ -254,9 +262,6 @@ musicFile.addEventListener("change", ()=>{
   safePlayMusic();
 });
 
-bgm.addEventListener("error", ()=> toast("Audio gagal load. Cek path file mp3-nya ya.", 2400));
-
-/* preview button inside start modal */
 trackList.addEventListener("click", (e)=>{
   const btn = e.target.closest("[data-preview]");
   if (!btn) return;
@@ -264,20 +269,15 @@ trackList.addEventListener("click", (e)=>{
   e.preventDefault();
   e.stopPropagation();
 
+  if (noMusic.checked){
+    toast("mode tanpa musik");
+    return;
+  }
+
   const selected = trackList.querySelector("input[name='track']:checked");
   const src = selected ? selected.value : null;
+  if (!src){ toast("pilih track dulu"); return; }
 
-  if (noMusic.checked){
-    toast("lagi mode tanpa musik");
-    return;
-  }
-
-  if (!src){
-    toast("pilih track dulu");
-    return;
-  }
-
-  // toggle preview play/pause
   if (bgm.src && bgm.src.includes(src) && !bgm.paused){
     bgm.pause();
     btn.textContent = "▶";
@@ -293,56 +293,7 @@ trackList.addEventListener("click", (e)=>{
 });
 
 /* ==================================================
-   Start modal logic (wajib gesture)
-   ================================================== */
-function closeStart(){
-  startModal.classList.remove("show");
-  startModal.setAttribute("aria-hidden", "true");
-}
-
-function openStart(){
-  startModal.classList.add("show");
-  startModal.setAttribute("aria-hidden", "false");
-}
-
-function getSelectedTrack(){
-  const r = trackList.querySelector("input[name='track']:checked");
-  return r ? r.value : null;
-}
-
-startBtn.addEventListener("click", ()=>{
-  toName = inputTo.value.trim() || "Teman";
-  fromName = inputFrom.value.trim() || "Aku";
-
-  const track = getSelectedTrack();
-  saveSetup(track);
-
-  // apply chosen track
-  if (noMusic.checked){
-    musicOn = false;
-    setMusicUI();
-    stopMusic();
-  } else {
-    musicOn = true;
-    setMusicUI();
-    if (track) setTrack(track);
-    userInteracted = true;
-    safePlayMusic();
-  }
-
-  // render with names
-  buildSlides();
-  render();
-  setIndex(0, true);
-
-  closeStart();
-  toast("ok, mulai 💗");
-  heartBurst(8);
-  vibrate(14);
-});
-
-/* ==================================================
-   Slides building & rendering
+   Build slides & UI
    ================================================== */
 function buildSlides(){
   slides = CONFIG.slides.map(s => ({
@@ -365,19 +316,23 @@ function buildSegments(){
   }
 }
 
-function setSegmentsFill(currentPct=0){
-  const segs = Array.from(segmentsEl.querySelectorAll(".seg > i"));
-  segs.forEach((bar, i)=>{
+function updateSegments(){
+  const segs = Array.from(segmentsEl.querySelectorAll(".seg"));
+  segs.forEach((seg, i)=>{
+    seg.classList.toggle("current", i === index);
+    const bar = seg.querySelector("i");
+    if (!bar) return;
     if (i < index) bar.style.width = "100%";
-    else if (i === index) bar.style.width = `${Math.max(0, Math.min(100, currentPct))}%`;
+    else if (i === index) bar.style.width = "52%";
     else bar.style.width = "0%";
   });
 }
 
-function render(){
-  toTag.textContent = `TO: ${toName}`;
-
-  // reset
+/* ==================================================
+   Render slides to stage
+   ================================================== */
+function renderSlides(){
+  // remove old slides
   stage.querySelectorAll(".slide").forEach(n => n.remove());
   dotsEl.innerHTML = "";
   buildSegments();
@@ -409,23 +364,18 @@ function render(){
       el.innerHTML = `
         <div class="flipWrap" data-flipwrap="1">
           <div class="flipInner" data-flipinner="1">
-            <div class="face front">
-              ${frontCardHTML}
-            </div>
+            <div class="face front">${frontCardHTML}</div>
             <div class="face back">
               <div class="card backCard" data-flipback="1">
                 <div class="kicker mono">
-                  <span>✨ card flipped</span>
-                  <span class="mono" style="opacity:.7;">tap to flip back</span>
+                  <span>✨ flipped</span>
+                  <span class="mono" style="opacity:.7;">tap kartu buat flip balik</span>
                 </div>
 
                 <div class="backTitle">Happy New Year 💗</div>
                 <p class="backText">Kamu sampai di akhir. Berarti kamu niat bacanya. Aku suka itu.</p>
 
-                <div class="note show" style="display:block;">
-                  ${escapeHtml(s.note || "Semoga tahun depan lebih baik ya.")}
-                </div>
-
+                <div class="note show" style="display:block;">${escapeHtml(s.note || "Semoga tahun depan lebih baik ya.")}</div>
                 <p class="backHint mono">Mini-game: tap kucing 5x untuk buka pesan rahasia 🐱</p>
               </div>
             </div>
@@ -440,17 +390,18 @@ function render(){
 
     const d = document.createElement("div");
     d.className = "dot";
-    d.addEventListener("click", (e)=>{ e.stopPropagation(); setIndex(i); });
+    d.addEventListener("click", (e)=>{ e.stopPropagation(); goTo(i); });
     dotsEl.appendChild(d);
   });
 
-  // click stage logic
+  // stage click: tidak pindah slide!
   stage.addEventListener("click", (e)=>{
-    // prevent when modal open
     if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
 
     const active = stage.querySelector(".slide.active");
-    const isLast = active && Number(active.dataset.i) === slides.length - 1;
+    if (!active) return;
+
+    const isLast = Number(active.dataset.i) === slides.length - 1;
 
     if (isLast){
       const flipInner = active.querySelector("[data-flipinner='1']");
@@ -475,88 +426,227 @@ function render(){
       }
     }
 
-    next();
+    // tap kosong: cuma efek kecil, TIDAK ganti slide
+    heartBurst(1);
   }, { passive:false });
-
-  // gesture for music
-  stage.addEventListener("pointerdown", ()=>{
-    if (!userInteracted){
-      userInteracted = true;
-      safePlayMusic();
-    }
-  }, {passive:true});
 }
 
 /* ==================================================
-   Slide navigation
+   Next button random position & vibe
    ================================================== */
-function setIndex(i, silent=false){
+function setFloatNextText(){
+  const base = pick(CONFIG.nextLabels);
+  floatNext.textContent = base;
+  // spawn animation
+  floatNext.classList.remove("spawn");
+  void floatNext.offsetWidth; // reflow
+  floatNext.classList.add("spawn");
+}
+
+function placeFloatNext(){
+  const active = stage.querySelector(".slide.active");
+  const card = active ? active.querySelector(".card") : null;
+  const sRect = stage.getBoundingClientRect();
+
+  // safe margins
+  const margin = 18;
+  const minX = margin;
+  const maxX = sRect.width - margin;
+  const minY = 56; // avoid segments
+  const maxY = sRect.height - 46;
+
+  // sometimes attach near card corner, sometimes free-float
+  const mode = Math.random() < 0.55 ? "nearCard" : "free";
+
+  let x = 0.5 * sRect.width;
+  let y = 0.78 * sRect.height;
+
+  if (mode === "nearCard" && card){
+    const cRect = card.getBoundingClientRect();
+    const cx = (cRect.left - sRect.left);
+    const cy = (cRect.top - sRect.top);
+
+    const anchors = [
+      { x: cx + cRect.width - 12, y: cy + cRect.height - 16 }, // bottom-right of card
+      { x: cx + cRect.width - 10, y: cy + 22 },                // top-right
+      { x: cx + 18,               y: cy + cRect.height - 16 }, // bottom-left
+      { x: cx + cRect.width * 0.55, y: cy + cRect.height + 14 } // just under card
+    ];
+    const a = pick(anchors);
+    x = a.x + randInt(-16, 16);
+    y = a.y + randInt(-10, 10);
+  } else {
+    // free positions
+    const spots = [
+      { x: 0.18, y: 0.72 },
+      { x: 0.82, y: 0.72 },
+      { x: 0.20, y: 0.50 },
+      { x: 0.80, y: 0.52 },
+      { x: 0.52, y: 0.80 }
+    ];
+    const s = pick(spots);
+    x = s.x * sRect.width + randInt(-18, 18);
+    y = s.y * sRect.height + randInt(-14, 14);
+  }
+
+  // clamp
+  x = Math.max(minX, Math.min(maxX, x));
+  y = Math.max(minY, Math.min(maxY, y));
+
+  floatNext.style.left = `${x}px`;
+  floatNext.style.top  = `${y}px`;
+}
+
+function updateNextButton(){
+  setFloatNextText();
+  placeFloatNext();
+}
+
+/* ==================================================
+   Random slide transitions (creative)
+   ================================================== */
+function transitionTo(newIndex){
+  if (transitioning) return;
   const max = slides.length - 1;
-  index = Math.max(0, Math.min(max, i));
+  newIndex = Math.max(0, Math.min(max, newIndex));
+  if (newIndex === index) return;
 
-  setBG(index);
-  setSegmentsFill(0);
+  transitioning = true;
 
-  const nodes = Array.from(stage.querySelectorAll(".slide"));
-  nodes.forEach((n, idx)=>{
-    n.classList.remove("active","prev");
-    n.setAttribute("aria-hidden", "true");
-    if (idx === index){
-      n.classList.add("active");
-      n.setAttribute("aria-hidden", "false");
-    } else if (idx === index - 1){
-      n.classList.add("prev");
+  const current = stage.querySelector(`.slide[data-i="${index}"]`);
+  const next = stage.querySelector(`.slide[data-i="${newIndex}"]`);
+
+  // pick transition pair
+  const t = pick(CONFIG.transitions);
+
+  // random rotation for paper exit
+  const rot = randInt(8, 16) * (Math.random() < 0.5 ? -1 : 1);
+  if (current) current.style.setProperty("--rot", `${rot}deg`);
+
+  // prepare next visible
+  if (next){
+    next.classList.add("active", t.enter);
+    next.setAttribute("aria-hidden", "false");
+    // close note when entering
+    const note = next.querySelector("[data-note='1']");
+    if (note) note.classList.remove("show");
+  }
+
+  // animate current out
+  if (current){
+    current.classList.add(t.exit);
+  }
+
+  // when current animation ends -> cleanup
+  let done = 0;
+  const finish = ()=>{
+    done += 1;
+    if (done < 1) return;
+
+    // cleanup classes
+    if (current){
+      current.classList.remove("active", t.exit, ...allTransitionClasses());
+      current.setAttribute("aria-hidden", "true");
+
+      // reset flip if leaving last
+      const inner = current.querySelector("[data-flipinner='1']");
+      if (inner) inner.classList.remove("flipped");
+    }
+    if (next){
+      next.classList.remove(t.enter);
+      next.classList.add("active");
+      next.setAttribute("aria-hidden", "false");
     }
 
-    // close notes when leaving
-    const note = n.querySelector("[data-note='1']");
-    if (note) note.classList.remove("show");
+    // update state + UI
+    index = newIndex;
+    setBG(index);
+    updateDots();
+    updateSegments();
+    updateCounter();
+    updateCatBadge();
+    updateNextButton();
 
-    // reset flip when leaving last slide
-    const inner = n.querySelector("[data-flipinner='1']");
-    if (inner && idx !== index) inner.classList.remove("flipped");
-  });
+    // auto-flip once on last slide
+    if (index === max){
+      const inner = next ? next.querySelector("[data-flipinner='1']") : null;
+      if (inner && !lastSlideAutoFlipped){
+        lastSlideAutoFlipped = true;
+        setTimeout(()=>{
+          inner.classList.add("flipped");
+          heartBurst(8);
+          vibrate(14);
+        }, 520);
+      }
+    }
 
-  Array.from(dotsEl.children).forEach((d, idx)=> d.classList.toggle("on", idx === index));
+    transitioning = false;
+    heartBurst(2);
+    vibrate(10);
+  };
+
+  const onEnd = (e)=>{
+    // ignore bubbled animationend from children
+    if (e.target !== current) return;
+    current.removeEventListener("animationend", onEnd);
+    finish();
+  };
+
+  if (current){
+    current.addEventListener("animationend", onEnd);
+  } else {
+    finish();
+  }
+}
+
+function allTransitionClasses(){
+  const all = [];
+  for (const t of CONFIG.transitions){
+    all.push(t.enter, t.exit);
+  }
+  return all;
+}
+
+/* ==================================================
+   UI updates
+   ================================================== */
+function updateDots(){
+  Array.from(dotsEl.children).forEach((d, i)=> d.classList.toggle("on", i === index));
   prevBtn.disabled = index === 0;
-  nextBtn.textContent = index === max ? "Done" : "Next";
+}
 
+function updateCounter(){
   const y = new Date().getFullYear();
   counterEl.textContent = `${y}→${y+1}`;
-
-  if (!silent) location.hash = `#${index+1}`;
-
-  heartBurst();
-  vibrate(12);
-
-  // auto flip on last slide once
-  if (index === max){
-    const inner = stage.querySelector(".slide.active [data-flipinner='1']");
-    if (inner && !lastSlideAutoFlipped){
-      lastSlideAutoFlipped = true;
-      setTimeout(()=>{
-        inner.classList.add("flipped");
-        heartBurst(8);
-        vibrate(14);
-      }, 480);
-    }
-  }
+  toTag.textContent = `TO: ${toName}`;
 }
-
-function next(){
-  if (index >= slides.length - 1){
-    toast("ok done 💗 selamat tahun baru!");
-    heartBurst(14);
-    vibrate(20);
-    return;
-  }
-  setIndex(index + 1);
-}
-
-function prev(){ setIndex(index - 1); }
 
 /* ==================================================
-   Reactions & particles
+   Navigation (ONLY via Next / Back button)
+   ================================================== */
+function goTo(i){ transitionTo(i); }
+function next(){
+  if (index >= slides.length - 1){
+    toast("udah terakhir 💗");
+    heartBurst(10);
+    return;
+  }
+  transitionTo(index + 1);
+}
+function prev(){
+  if (index <= 0){
+    toast("udah paling awal");
+    return;
+  }
+  transitionTo(index - 1);
+}
+
+prevBtn.addEventListener("click", (e)=>{ e.stopPropagation(); prev(); });
+nextBtn.addEventListener("click", (e)=>{ e.stopPropagation(); next(); });
+floatNext.addEventListener("click", (e)=>{ e.stopPropagation(); next(); });
+
+/* ==================================================
+   Particles / reactions
    ================================================== */
 function heartBurst(extra=0){
   const count = 6 + extra;
@@ -591,7 +681,7 @@ heartBtn.addEventListener("click", (e)=>{
 });
 
 /* ==================================================
-   Mini-game: tap cat 5x -> secret modal
+   Cat mini-game
    ================================================== */
 function updateCatBadge(){
   catBadge.textContent = `tap kucing: ${Math.min(catTapCount, CONFIG.catTapsNeeded)}/${CONFIG.catTapsNeeded}`;
@@ -636,7 +726,6 @@ copySecret.addEventListener("click", async (e)=>{
 updateCatBadge();
 
 if (catEl){
-  // stop cat click bubbling to next slide
   catEl.addEventListener("click", (e)=> e.stopPropagation());
 
   catEl.addEventListener("pointerdown", (e)=>{
@@ -650,6 +739,7 @@ if (catEl){
   catEl.addEventListener("pointermove", (e)=>{
     if (!catPress) return;
     e.stopPropagation();
+
     const dx = e.clientX - catPress.x;
     const dy = e.clientY - catPress.y;
 
@@ -701,13 +791,12 @@ if (catEl){
 }
 
 /* ==================================================
-   Parallax (pointer)
+   Parallax
    ================================================== */
-let px = 0, py = 0;
 stage.addEventListener("pointermove", (e)=>{
   const r = stage.getBoundingClientRect();
-  px = (e.clientX - r.left) / r.width - 0.5;
-  py = (e.clientY - r.top) / r.height - 0.5;
+  const px = (e.clientX - r.left) / r.width - 0.5;
+  const py = (e.clientY - r.top) / r.height - 0.5;
 
   for(const el of parEls){
     if (el === catEl && catDragging) continue;
@@ -717,88 +806,75 @@ stage.addEventListener("pointermove", (e)=>{
 }, {passive:true});
 
 /* ==================================================
-   Hold-to-auto-next (story style)
-   - tekan lama: bar current segment ngisi lalu next
-   - lepas: pause
+   Start modal
    ================================================== */
-function isBlockedTarget(target){
-  return !!target.closest(
-    "button, input, label, .overlay, .trackItem, .miniBtn, .cat, [data-card], [data-flipback]"
-  );
+function openStart(){
+  startModal.classList.add("show");
+  startModal.setAttribute("aria-hidden", "false");
+}
+function closeStart(){
+  startModal.classList.remove("show");
+  startModal.setAttribute("aria-hidden", "true");
 }
 
-function startHold(){
-  if (holding) return;
-  holding = true;
-  holdStart = performance.now();
-
-  const tick = () => {
-    if (!holding) return;
-    const now = performance.now();
-    const pct = ((now - holdStart) / CONFIG.holdDurationMs) * 100;
-    setSegmentsFill(pct);
-
-    if (pct >= 100){
-      holding = false;
-      setSegmentsFill(100);
-      next();
-      return;
-    }
-    holdTimer = requestAnimationFrame(tick);
-  };
-
-  holdTimer = requestAnimationFrame(tick);
+function getSelectedTrack(){
+  const r = trackList.querySelector("input[name='track']:checked");
+  return r ? r.value : null;
 }
 
-function endHold(){
-  holding = false;
-  if (holdTimer) cancelAnimationFrame(holdTimer);
-  holdTimer = null;
-  setSegmentsFill(0);
-}
+startBtn.addEventListener("click", ()=>{
+  toName = inputTo.value.trim() || "Teman";
+  fromName = inputFrom.value.trim() || "Aku";
 
-stage.addEventListener("pointerdown", (e)=>{
-  if (startModal.classList.contains("show") || secretModal.classList.contains("show")) return;
-  if (isBlockedTarget(e.target)) return;
-  startHold();
-}, {passive:true});
+  const track = getSelectedTrack();
+  saveSetup(track);
 
-stage.addEventListener("pointerup", ()=> endHold(), {passive:true});
-stage.addEventListener("pointercancel", ()=> endHold(), {passive:true});
-stage.addEventListener("pointerleave", ()=> endHold(), {passive:true});
-
-/* ==================================================
-   Controls + swipe
-   ================================================== */
-prevBtn.addEventListener("click", (e)=>{ e.stopPropagation(); prev(); });
-nextBtn.addEventListener("click", (e)=>{ e.stopPropagation(); next(); });
-
-let sx=0, sy=0, touching=false;
-stage.addEventListener("touchstart", (e)=>{
-  if (!e.touches || !e.touches[0]) return;
-  touching=true;
-  sx = e.touches[0].clientX;
-  sy = e.touches[0].clientY;
-}, {passive:true});
-
-stage.addEventListener("touchend", (e)=>{
-  if (!touching) return;
-  touching=false;
-
-  const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
-  if(!t) return;
-
-  const dx = t.clientX - sx;
-  const dy = t.clientY - sy;
-
-  if (Math.abs(dx) > 42 && Math.abs(dy) < 80){
-    if (dx < 0) next();
-    else prev();
+  if (noMusic.checked){
+    musicOn = false;
+    setMusicUI();
+    stopMusic();
+  } else {
+    musicOn = true;
+    setMusicUI();
+    if (track) setTrack(track);
+    userInteracted = true;
+    safePlayMusic();
   }
-}, {passive:true});
+
+  buildSlides();
+  renderSlides();
+
+  // initial state show slide 0
+  index = 0;
+  setBG(0);
+
+  const s0 = stage.querySelector(`.slide[data-i="0"]`);
+  if (s0){
+    s0.classList.add("active", "enter-pop");
+    s0.setAttribute("aria-hidden", "false");
+  }
+
+  // dots
+  Array.from(dotsEl.children).forEach((d, i)=> d.classList.toggle("on", i === 0));
+  prevBtn.disabled = true;
+
+  // segments
+  updateSegments();
+
+  // counter
+  updateCounter();
+
+  // next button randomize
+  updateNextButton();
+
+  closeStart();
+  toast("ok, mulai 💗");
+  heartBurst(10);
+  vibrate(14);
+});
 
 /* ==================================================
    Init
    ================================================== */
 setBG(0);
-openStart(); // show popup first
+openStart();
