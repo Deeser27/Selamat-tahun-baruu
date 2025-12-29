@@ -26,7 +26,7 @@ const CONFIG = {
     { kicker:"terima kasih mode: ON", title:"Makasih ya.", text:"Makasih yaa udah bantuu in aku sama nagjak hal hal seruu ke akuu, terus makasihh juga buat pas kemaren ituu, km sampe nungguin aku pulang yang puylangnya hari senin padhaal kamu dari hari kamis dah bisa pulanggg😭😭 <span class='highlight'></span>. 🫶", foot:"Next untuk lanjut", note:"jumjur aku gatau mau ngomong apa WKKWKWKW, intinya makasihh dahhh" },
     { kicker:"small facts (real)", title:"Fakta singkat:", text:"Aku tuh awall awall kuliahh bingungg dan gatau apa paa loh aslei heheheh <span class='highlight'>untung kamu banyak bantuu.", foot:"Next: cari tombolnya 😭", note:"kali ini gaada notenya" },
     { kicker:"reset button", title:"Kalau tahun ini aku ada salah", text:"Yang bikin kamu kesel atau marah gitu atau tersinggung aku minta maaf yaa, minta maaf juga kalo aku sering chat ngespam gitu, apalagi akhir2 ini, makanya aku agak ngurangin, takut ganggu hehe👉👈", foot:"Next", note:"aku minta maaaf nya beneran ini bukan alay, walau pasti kamubilang alay sihhh......" },
-    { kicker:"Sehatt selalauu", title:"semoga tahun besok kmju tidur maelmm, ga sehatt kocak ga tidur tuh", text:"Semoga kamu sehat, rezeki lancar, hati adem. Dan semoga kita tetap dekett.", foot:"Next", note:"kayanya aku terallau alay dehh hehe" },
+    { kicker:"Sehatt selalauu", title:"semoga tahun besok kmju tidur maelmm", text:" ga sehatt kocak ga tidur tuh semoga kamu sehat, rezeki lancar, hati adem. Dan semoga kita tetap dekett.", foot:"Next", note:"kayanya aku terallau alay dehh hehe" },
     { kicker:"final 💌", title:"Udahhh Segitu ajaa bingung mau isi apa lagi wkwkwk", text:"Selamat Tahun Baruuu🥳🥳🥳🥳🥳,  Terima kasih buat semuanyaa tahun ini. <span class='highlight'></span> 🫶", foot:"— {{from}}", note:"Kartu ini bisa flip. Tap kartu 😌" }
   ]
 };
@@ -1153,3 +1153,4 @@ updateHeader();
 openStart();
 resizeFx();
 requestAnimationFrame(engine);
+
